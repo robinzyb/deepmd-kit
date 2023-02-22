@@ -381,16 +381,34 @@ def fitting_dipole():
         Argument("seed", [int,None], optional = True, doc = doc_seed)
     ]    
 
+def fitting_finitefield():
+    doc_neuron = 'The number of neurons in each hidden layers of the fitting net. When two hidden layers are of the same size, a skip connection is built.'
+    doc_activation_function = f'The activation function in the fitting net. Supported activation functions are {list_to_doc(ACTIVATION_FN_DICT.keys())} Note that "gelu" denotes the custom operator version, and "gelu_tf" denotes the TF standard version.'
+    doc_resnet_dt = 'Whether to use a "Timestep" in the skip connection'
+    doc_precision = f'The precision of the fitting net parameters, supported options are {list_to_doc(PRECISION_DICT.keys())} Default follows the interface precision.'
+    doc_sel_type = 'The atom types for which the atomic dipole will be provided. If not set, all types will be selected.'
+    doc_seed = 'Random seed for parameter initialization of the fitting net'
+    return [
+        Argument("neuron", list, optional = True, default = [120,120,120], alias = ['n_neuron'], doc = doc_neuron),
+        Argument("activation_function", str, optional = True, default = 'tanh', doc = doc_activation_function),
+        Argument("resnet_dt", bool, optional = True, default = True, doc = doc_resnet_dt),
+        Argument("precision", str, optional = True, default = 'default', doc = doc_precision),
+        Argument("sel_type", [list,int,None], optional = True, alias = ['dipole_type'], doc = doc_sel_type),
+        Argument("seed", [int,None], optional = True, doc = doc_seed)
+    ]    
+
+
 #   YWolfeee: Delete global polar mode, merge it into polar mode and use loss setting to support.
 def fitting_variant_type_args():
     doc_descrpt_type = 'The type of the fitting. See explanation below. \n\n\
 - `ener`: Fit an energy model (potential energy surface).\n\n\
 - `dipole`: Fit an atomic dipole model. Global dipole labels or atomic dipole labels for all the selected atoms (see `sel_type`) should be provided by `dipole.npy` in each data system. The file either has number of frames lines and 3 times of number of selected atoms columns, or has number of frames lines and 3 columns. See `loss` parameter.\n\n\
-- `polar`: Fit an atomic polarizability model. Global polarizazbility labels or atomic polarizability labels for all the selected atoms (see `sel_type`) should be provided by `polarizability.npy` in each data system. The file eith has number of frames lines and 9 times of number of selected atoms columns, or has number of frames lines and 9 columns. See `loss` parameter.\n\n'
-
+- `polar`: Fit an atomic polarizability model. Global polarizazbility labels or atomic polarizability labels for all the selected atoms (see `sel_type`) should be provided by `polarizability.npy` in each data system. The file eith has number of frames lines and 9 times of number of selected atoms columns, or has number of frames lines and 9 columns. See `loss` parameter.\n\n\
+- `finitefield`: Fit wannier centers under finitefields'
     return Variant("type", [Argument("ener", dict, fitting_ener()),
                             Argument("dipole", dict, fitting_dipole()),
                             Argument("polar", dict, fitting_polar()),
+                            Argument("finitefield", dict, fitting_finitefield())
                             ], 
                    optional = True,
                    default_tag = 'ener',

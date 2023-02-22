@@ -14,7 +14,7 @@ from deepmd.env import tf, tfv2
 from deepmd.env import get_tf_session_config
 from deepmd.env import GLOBAL_TF_FLOAT_PRECISION
 from deepmd.env import GLOBAL_ENER_FLOAT_PRECISION
-from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA
+from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA, FiniteFieldFittingSeA
 from deepmd.descriptor import Descriptor
 from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel
 from deepmd.loss import EnerStdLoss, EnerDipoleLoss, TensorLoss
@@ -77,7 +77,7 @@ class DPTrainer (object):
             nvnmd_cfg.init_from_deepmd_input(model_param)
             nvnmd_cfg.disp_message()
             nvnmd_cfg.save()
-        
+     
         # descriptor
         try:
             descrpt_type = descrpt_param['type']
@@ -90,13 +90,14 @@ class DPTrainer (object):
         if self.multi_task_mode:
             descrpt_param['multi_task'] = True
         self.descrpt = Descriptor(**descrpt_param)
-
         # fitting net
         def fitting_net_init(fitting_type_, descrpt_type_, params):
             if fitting_type_ == 'ener':
                 return EnerFitting(**params)
             elif fitting_type_ == 'dipole':
                 return DipoleFittingSeA(**params)
+            elif fitting_type_ == 'finitefield':
+                return FiniteFieldFittingSeA(**params)
             elif fitting_type_ == 'polar':
                 return PolarFittingSeA(**params)
             # elif fitting_type_ == 'global_polar':
@@ -106,7 +107,7 @@ class DPTrainer (object):
             #         raise RuntimeError('fitting global_polar only supports descrptors: loc_frame and se_e2_a')
             else:
                 raise RuntimeError('unknow fitting type ' + fitting_type_)
-
+ 
         if not self.multi_task_mode:
             fitting_type = fitting_param.get('type', 'ener')
             self.fitting_type = fitting_type
@@ -190,6 +191,15 @@ class DPTrainer (object):
                     model_param.get('data_stat_nbatch', 10),
                     model_param.get('data_stat_protect', 1e-2)
                 )
+            elif self.fitting_type == 'finitefield':
+                self.model = DipoleModel(
+                    self.descrpt,
+                    self.fitting,
+                    self.typeebd,
+                    model_param.get('type_map'),
+                    model_param.get('data_stat_nbatch', 10),
+                    model_param.get('data_stat_protect', 1e-2)
+                )            
             # elif self.fitting_type == 'global_polar':
             #     self.model = GlobalPolarModel(
             #         self.descrpt,
@@ -270,6 +280,13 @@ class DPTrainer (object):
                                   tensor_size=9,
                                   atomic=False,
                                   label_name='polarizability')
+            elif _fitting_type == 'finitefield':
+                loss = TensorLoss(_loss_param,
+                                  model=_fitting,
+                                  tensor_name='dipole',
+                                  tensor_size=3,
+                                  label_name='dipole')
+
             else:
                 raise RuntimeError('get unknown fitting type when building loss function')
             return loss
@@ -284,7 +301,7 @@ class DPTrainer (object):
                 loss_param = loss_param_dict.get(fitting_key, {})
                 self.loss_dict[fitting_key] = loss_init(loss_param, self.fitting_type_dict[fitting_key],
                                                                self.fitting_dict[fitting_key], self.lr)
-
+                
         # training
         tr_data = jdata['training']
         self.fitting_weight = tr_data.get('fitting_weight', None)
@@ -345,7 +362,7 @@ class DPTrainer (object):
         # if init the graph with the frozen model
         self.frz_model = None
         self.model_type = None
-
+        
 
     def build (self, 
                data = None, 
@@ -468,6 +485,7 @@ class DPTrainer (object):
         self.place_holders['natoms_vec']        = tf.placeholder(tf.int32,   [self.ntypes+2], name='t_natoms')
         self.place_holders['default_mesh']      = tf.placeholder(tf.int32,   [None], name='t_mesh')
         self.place_holders['is_training']       = tf.placeholder(tf.bool)
+        #print(self.place_holders)
         self.model_pred\
             = self.model.build (self.place_holders['coord'], 
                                 self.place_holders['type'], 
@@ -599,7 +617,6 @@ class DPTrainer (object):
 
         # if valid_data is None:  # no validation set specified.
         #     valid_data = train_data  # using training set as validation set.
-
         stop_batch = self.stop_batch
         self._init_session()
 
@@ -683,6 +700,7 @@ class DPTrainer (object):
 
             if self.timing_in_training: tic = time.time()
             train_feed_dict = self.get_feed_dict(train_batch, is_training=True)
+            #print(train_feed_dict)
             # use tensorboard to visualize the training of deepmd-kit
             # it will takes some extra execution time to generate the tensorboard data
             if self.tensorboard and (cur_batch % self.tensorboard_freq == 0):

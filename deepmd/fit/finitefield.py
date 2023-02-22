@@ -12,7 +12,7 @@ from deepmd.fit.fitting import Fitting
 from deepmd.env import global_cvt_2_tf_float
 from deepmd.env import GLOBAL_TF_FLOAT_PRECISION
 
-class DipoleFittingSeA (Fitting) :
+class FiniteFieldFittingSeA (Fitting) :
     """
     Fit the atomic dipole with descriptor se_a
     
@@ -65,6 +65,13 @@ class DipoleFittingSeA (Fitting) :
         self.dim_rot_mat_1 = descrpt.get_dim_rot_mat_1()
         self.dim_rot_mat = self.dim_rot_mat_1 * 3
         self.useBN = False
+
+        # read efield/dfield from `filed.npy`
+        add_data_requirement(key='field', ndof=3, atomic=False, must=True, high_prec=False, default=[0, 0, 0])
+        self.field_avg = None
+        self.field_std = None
+        self.field_inv_std = None
+
         self.fitting_net_variables = None
         self.mixed_prec = None
 
