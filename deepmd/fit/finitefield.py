@@ -91,6 +91,7 @@ class FiniteFieldFittingSeA (Fitting) :
                      start_index,
                      natoms,
                      inputs,
+                     field,
                      rot_mat,
                      suffix='',
                      reuse=None
@@ -103,8 +104,15 @@ class FiniteFieldFittingSeA (Fitting) :
         rot_mat_i = tf.slice(rot_mat,
                              [0, start_index, 0],
                              [-1, natoms, -1])
+        # I don't understand this..
         rot_mat_i = tf.reshape(rot_mat_i, [-1, self.dim_rot_mat_1, 3])
         layer = inputs_i
+        # add e/dfield
+        ext_field = tf.tile(field, [1, natoms])
+        ext_field = tf.reshape(ext_field, [-1, 3])
+        ext_field = tf.cast(ext_field, self.fitting_precision)
+        layer = tf.concat([layer, ext_field], axis = 1)
+        
         for ii in range(0, len(self.n_neuron)):
             if ii >= 1 and self.n_neuron[ii] == self.n_neuron[ii - 1]:
                 layer += one_layer(layer, self.n_neuron[ii], name='layer_' + str(ii) + suffix,
@@ -171,10 +179,42 @@ class FiniteFieldFittingSeA (Fitting) :
             input_dict = {}
         type_embedding = input_dict.get('type_embedding', None)
         atype = input_dict.get('atype', None)
+
+        # add e/dfield
+        if self.field_avg is None:
+            self.field_avg = 0.
+        if self.field_inv_std is None:
+            self.field_inv_std = 1.
+        with tf.variable_scope('fitting_attr' + suffix, reuse = reuse):
+            t_dfield = tf.constant(
+                value = 3,
+                name  = 'dfield',
+                dtype = tf.int32
+                )
+            t_field_avg = tf.get_variable( 
+                name        = 't_field_avg',
+                shape       = 3,
+                dtype       = GLOBAL_TF_FLOAT_PRECISION,
+                trainable   = False,
+                initializer = tf.constant_initializer(self.field_avg)
+                )
+            t_field_istd = tf.get_variable(
+                name        = 't_field_istd',
+                shape       = 3,
+                dtype       = GLOBAL_TF_FLOAT_PRECISION,
+                trainable   = False,
+                initializer = tf.constant_initializer(self.field_inv_std)
+                )
+
         nframes = input_dict.get('nframes')
         start_index = 0
         inputs = tf.reshape(input_d, [-1, natoms[0], self.dim_descrpt])
         rot_mat = tf.reshape(rot_mat, [-1, natoms[0], self.dim_rot_mat])
+
+        #TODO: make the rotational invariance of field.
+        field = input_dict['field']
+        field = tf.reshape(field, [-1, 3])
+        field = (field - t_field_avg) * t_field_istd   
 
         if type_embedding is not None:
             nloc_mask = tf.reshape(tf.tile(tf.repeat(self.sel_mask, natoms[2:]), [nframes]), [nframes, -1])
@@ -196,8 +236,14 @@ class FiniteFieldFittingSeA (Fitting) :
                     start_index += natoms[2+type_i]
                     continue
                 final_layer = self._build_lower(
-                    start_index, natoms[2+type_i],
-                    inputs, rot_mat, suffix='_type_'+str(type_i)+suffix, reuse=reuse)
+                    start_index=start_index, 
+                    natoms=natoms[2+type_i],
+                    inputs=inputs, 
+                    field=field,
+                    rot_mat=rot_mat, 
+                    suffix='_type_'+str(type_i)+suffix, 
+                    reuse=reuse
+                    )
                 start_index += natoms[2 + type_i]
                 # concat the results
                 outs_list.append(final_layer)
@@ -215,8 +261,14 @@ class FiniteFieldFittingSeA (Fitting) :
             inputs = tf.reshape(inputs, [nframes, self.nloc_masked, self.dim_descrpt])
             rot_mat = tf.reshape(rot_mat, [nframes, self.nloc_masked, self.dim_rot_mat_1 * 3])
             final_layer = self._build_lower(
-                0, self.nloc_masked,
-                inputs, rot_mat, suffix=suffix, reuse=reuse)
+                    start_index=0, 
+                    natoms=self.nloc_masked,
+                    inputs=inputs, 
+                    field=field,
+                    rot_mat=rot_mat, 
+                    suffix='_type_'+str(type_i)+suffix, 
+                    reuse=reuse
+                    )
             # nframes x natoms x 3
             outs = tf.reshape(final_layer, [nframes, self.nloc_masked, 3])
 

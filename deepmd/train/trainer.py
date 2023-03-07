@@ -480,7 +480,6 @@ class DPTrainer (object):
                 self._get_place_horders(data.get_data_dict())
             else:
                 self._get_place_horders(data[list(data.keys())[0]].get_data_dict())
-
         self.place_holders['type']      = tf.placeholder(tf.int32,   [None], name='t_type')
         self.place_holders['natoms_vec']        = tf.placeholder(tf.int32,   [self.ntypes+2], name='t_natoms')
         self.place_holders['default_mesh']      = tf.placeholder(tf.int32,   [None], name='t_mesh')
