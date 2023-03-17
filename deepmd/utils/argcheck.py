@@ -381,7 +381,7 @@ def fitting_dipole():
         Argument("seed", [int,None], optional = True, doc = doc_seed)
     ]    
 
-def fitting_finitefield():
+def fitting_finitefieldwfc():
     doc_neuron = 'The number of neurons in each hidden layers of the fitting net. When two hidden layers are of the same size, a skip connection is built.'
     doc_activation_function = f'The activation function in the fitting net. Supported activation functions are {list_to_doc(ACTIVATION_FN_DICT.keys())} Note that "gelu" denotes the custom operator version, and "gelu_tf" denotes the TF standard version.'
     doc_resnet_dt = 'Whether to use a "Timestep" in the skip connection'
@@ -397,6 +397,34 @@ def fitting_finitefield():
         Argument("seed", [int,None], optional = True, doc = doc_seed)
     ]    
 
+#  --- Fitting net configurations: --- #
+def fitting_finitefieldener():
+    doc_numb_fparam = 'The dimension of the frame parameter. If set to >0, file `fparam.npy` should be included to provided the input fparams.'
+    doc_numb_aparam = 'The dimension of the atomic parameter. If set to >0, file `aparam.npy` should be included to provided the input aparams.'
+    doc_neuron = 'The number of neurons in each hidden layers of the fitting net. When two hidden layers are of the same size, a skip connection is built.'
+    doc_activation_function = f'The activation function in the fitting net. Supported activation functions are {list_to_doc(ACTIVATION_FN_DICT.keys())} Note that "gelu" denotes the custom operator version, and "gelu_tf" denotes the TF standard version.'
+    doc_precision = f'The precision of the fitting net parameters, supported options are {list_to_doc(PRECISION_DICT.keys())} Default follows the interface precision.'
+    doc_resnet_dt = 'Whether to use a "Timestep" in the skip connection'
+    doc_trainable = 'Whether the parameters in the fitting net are trainable. This option can be\n\n\
+- bool: True if all parameters of the fitting net are trainable, False otherwise.\n\n\
+- list of bool: Specifies if each layer is trainable. Since the fitting net is composed by hidden layers followed by a output layer, the length of tihs list should be equal to len(`neuron`)+1.'
+    doc_rcond = 'The condition number used to determine the inital energy shift for each type of atoms.'
+    doc_seed = 'Random seed for parameter initialization of the fitting net'
+    doc_atom_ener = 'Specify the atomic energy in vacuum for each type'
+
+    return [
+        Argument("numb_fparam", int, optional = True, default = 0, doc = doc_numb_fparam),
+        Argument("numb_aparam", int, optional = True, default = 0, doc = doc_numb_aparam),
+        Argument("neuron", list, optional = True, default = [120,120,120], alias = ['n_neuron'], doc = doc_neuron),
+        Argument("activation_function", str, optional = True, default = 'tanh', doc = doc_activation_function),
+        Argument("precision", str, optional = True, default = 'default', doc = doc_precision),
+        Argument("resnet_dt", bool, optional = True, default = True, doc = doc_resnet_dt),
+        Argument("trainable", [list,bool], optional = True, default = True, doc = doc_trainable),
+        Argument("rcond", float, optional = True, default = 1e-3, doc = doc_rcond),
+        Argument("seed", [int,None], optional = True, doc = doc_seed),
+        Argument("atom_ener", list, optional = True, default = [], doc = doc_atom_ener)
+    ]
+
 
 #   YWolfeee: Delete global polar mode, merge it into polar mode and use loss setting to support.
 def fitting_variant_type_args():
@@ -408,7 +436,8 @@ def fitting_variant_type_args():
     return Variant("type", [Argument("ener", dict, fitting_ener()),
                             Argument("dipole", dict, fitting_dipole()),
                             Argument("polar", dict, fitting_polar()),
-                            Argument("finitefield", dict, fitting_finitefield())
+                            Argument("finitefieldwfc", dict, fitting_finitefieldwfc()),
+                            Argument("finitefieldener", dict, fitting_finitefieldener())
                             ], 
                    optional = True,
                    default_tag = 'ener',

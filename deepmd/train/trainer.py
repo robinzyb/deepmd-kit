@@ -14,7 +14,7 @@ from deepmd.env import tf, tfv2
 from deepmd.env import get_tf_session_config
 from deepmd.env import GLOBAL_TF_FLOAT_PRECISION
 from deepmd.env import GLOBAL_ENER_FLOAT_PRECISION
-from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA, FiniteFieldFittingSeA
+from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA, FiniteFieldFittingSeA, FiniteFieldEnerFitting
 from deepmd.descriptor import Descriptor
 from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel
 from deepmd.loss import EnerStdLoss, EnerDipoleLoss, TensorLoss
@@ -94,9 +94,11 @@ class DPTrainer (object):
         def fitting_net_init(fitting_type_, descrpt_type_, params):
             if fitting_type_ == 'ener':
                 return EnerFitting(**params)
+            elif fitting_type == 'finitefieldener':
+                return FiniteFieldEnerFitting(**params)
             elif fitting_type_ == 'dipole':
                 return DipoleFittingSeA(**params)
-            elif fitting_type_ == 'finitefield':
+            elif fitting_type_ == 'finitefieldwfc':
                 return FiniteFieldFittingSeA(**params)
             elif fitting_type_ == 'polar':
                 return PolarFittingSeA(**params)
@@ -171,6 +173,19 @@ class DPTrainer (object):
                     model_param.get('sw_rmin'),
                     model_param.get('sw_rmax')
                 )
+            elif self.fitting_type == 'finitefieldener':
+                self.model = EnerModel(
+                    self.descrpt,
+                    self.fitting,
+                    self.typeebd,
+                    model_param.get('type_map'),
+                    model_param.get('data_stat_nbatch', 10),
+                    model_param.get('data_stat_protect', 1e-2),
+                    model_param.get('use_srtab'),
+                    model_param.get('smin_alpha'),
+                    model_param.get('sw_rmin'),
+                    model_param.get('sw_rmax')
+                )
             # elif fitting_type == 'wfc':
             #     self.model = WFCModel(model_param, self.descrpt, self.fitting)
             elif self.fitting_type == 'dipole':
@@ -191,7 +206,7 @@ class DPTrainer (object):
                     model_param.get('data_stat_nbatch', 10),
                     model_param.get('data_stat_protect', 1e-2)
                 )
-            elif self.fitting_type == 'finitefield':
+            elif self.fitting_type == 'finitefieldwfc':
                 self.model = DipoleModel(
                     self.descrpt,
                     self.fitting,
@@ -255,6 +270,11 @@ class DPTrainer (object):
                     loss = EnerDipoleLoss(**_loss_param)
                 else:
                     raise RuntimeError('unknow loss type')
+            elif _fitting_type == 'finitefieldener':
+                _loss_param.pop('type', None)
+                _loss_param['starter_learning_rate'] = _lr.start_lr()
+                loss = EnerStdLoss(**_loss_param)
+
             elif _fitting_type == 'wfc':
                 loss = TensorLoss(_loss_param,
                                   model=_fitting,
@@ -280,12 +300,13 @@ class DPTrainer (object):
                                   tensor_size=9,
                                   atomic=False,
                                   label_name='polarizability')
-            elif _fitting_type == 'finitefield':
+            elif _fitting_type == 'finitefieldwfc':
                 loss = TensorLoss(_loss_param,
                                   model=_fitting,
                                   tensor_name='dipole',
                                   tensor_size=3,
                                   label_name='dipole')
+            
 
             else:
                 raise RuntimeError('get unknown fitting type when building loss function')
