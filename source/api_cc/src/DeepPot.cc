@@ -307,7 +307,7 @@ init (const std::string & model, const int & gpu_rank, const std::string & file_
   ntypes = get_scalar<int>("descrpt_attr/ntypes");
   dfparam = get_scalar<int>("fitting_attr/dfparam");
   daparam = get_scalar<int>("fitting_attr/daparam");
-  dfield = get_scalar<int>("fitting_attr/dfield");
+  //dfield = get_scalar<int>("fitting_attr/dfield");
   if (dfparam < 0) dfparam = 0;
   if (daparam < 0) daparam = 0;
   model_type = get_scalar<STRINGTYPE>("model_attr/model_type");
@@ -870,7 +870,7 @@ init (const std::vector<std::string> & models, const int & gpu_rank, const std::
   ntypes = get_scalar<int>("descrpt_attr/ntypes");
   dfparam = get_scalar<int>("fitting_attr/dfparam");
   daparam = get_scalar<int>("fitting_attr/daparam");
-  dfield = get_scalar<int>("fitting_attr/dfield");
+  //dfield = get_scalar<int>("fitting_attr/dfield");
   if (dfparam < 0) dfparam = 0;
   if (daparam < 0) daparam = 0;
   model_type = get_scalar<STRINGTYPE>("model_attr/model_type");

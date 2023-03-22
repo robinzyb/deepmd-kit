@@ -407,7 +407,6 @@ def freeze(
             "reduce the size of your model."
         ) from e
     nodes = [n.name for n in input_graph_def.node]
-
     # We start a session and restore the graph weights
     with tf.Session() as sess:
         saver.restore(sess, input_checkpoint)

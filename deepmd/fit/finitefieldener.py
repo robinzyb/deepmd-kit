@@ -287,6 +287,16 @@ class FiniteFieldEnerFitting (Fitting):
                 if self.aparam_std[ii] < protection:
                     self.aparam_std[ii] = protection
             self.aparam_inv_std = 1./self.aparam_std
+        
+        # stat field
+        cat_data = np.concatenate(all_stat['field'], axis = 0)
+        cat_data = np.reshape(cat_data, [-1, 3])
+        self.field_avg = np.average(cat_data, axis = 0)
+        self.field_std = np.std(cat_data, axis = 0)
+        for ii in range(self.field_std.size):
+            if self.field_std[ii] < protection:
+                self.field_std[ii] = protection
+        self.field_inv_std = 1./self.field_std        
 
 
     def _compute_std (self, sumv2, sumv, sumn) :
@@ -522,6 +532,10 @@ class FiniteFieldEnerFitting (Fitting):
             aparam = tf.reshape(aparam, [-1, self.numb_aparam])
             aparam = (aparam - t_aparam_avg) * t_aparam_istd
             aparam = tf.reshape(aparam, [-1, self.numb_aparam * natoms[0]])
+        
+        field = input_dict['field']
+        field = tf.reshape(field, [-1, 3])
+        field = (field - t_field_avg) * t_field_istd
 
         atype_nall = tf.reshape(atype, [-1, natoms[1]])
         self.atype_nloc = tf.reshape(tf.slice(atype_nall, [0, 0], [-1, natoms[0]]), [-1])  ## lammps will make error
@@ -628,6 +642,8 @@ class FiniteFieldEnerFitting (Fitting):
         if self.numb_aparam > 0:
             self.aparam_avg = get_tensor_by_name_from_graph(graph, 'fitting_attr%s/t_aparam_avg' % suffix)
             self.aparam_inv_std = get_tensor_by_name_from_graph(graph, 'fitting_attr%s/t_aparam_istd' % suffix)
+        self.field_avg = get_tensor_by_name_from_graph(graph, 'fitting_attr%s/t_field_avg' % suffix)
+        self.field_inv_std = get_tensor_by_name_from_graph(graph, 'fitting_attr%s/t_field_istd' % suffix)
         try:
             self.bias_atom_e = get_tensor_by_name_from_graph(graph, 'fitting_attr%s/t_bias_atom_e' % suffix)
         except GraphWithoutTensorError:
