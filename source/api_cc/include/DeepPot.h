@@ -50,6 +50,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x 3.
+      * natoms x 3. Then all frames are assumed to be provided with the same field.
+      * 3. Then all frames and atoms are provided with the same field.
   **/
   template<typename VALUETYPE>
   void compute (ENERGYTYPE &			ener,
@@ -59,7 +63,8 @@ public:
 		const std::vector<int> &	atype,
 		const std::vector<VALUETYPE> &	box, 
 		const std::vector<VALUETYPE>&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>&	field = std::vector<VALUETYPE>());
   /**
   * @brief Evaluate the energy, force and virial by using this DP.
   * @param[out] ener The system energy.
@@ -78,6 +83,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x 3.
+      * natoms x 3. Then all frames are assumed to be provided with the same field.
+      * 3. Then all frames and atoms are provided with the same field. 
   **/
   template<typename VALUETYPE>
   void compute (ENERGYTYPE &			ener,
@@ -90,7 +99,8 @@ public:
 		const InputNlist &		inlist,
 		const int&			ago,
 		const std::vector<VALUETYPE>&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>&	field = std::vector<VALUETYPE>());
   /**
   * @brief Evaluate the energy, force, virial, atomic energy, and atomic virial by using this DP.
   * @param[out] ener The system energy.
@@ -108,6 +118,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x 3.
+      * natoms x 3. Then all frames are assumed to be provided with the same field.
+      * 3. Then all frames and atoms are provided with the same field. 
   **/
   template<typename VALUETYPE>
   void compute (ENERGYTYPE &			ener,
@@ -119,7 +133,8 @@ public:
 		const std::vector<int> &	atype,
 		const std::vector<VALUETYPE> &	box,
 		const std::vector<VALUETYPE>&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>&	field = std::vector<VALUETYPE>());
   /**
   * @brief Evaluate the energy, force, virial, atomic energy, and atomic virial by using this DP.
   * @param[out] ener The system energy.
@@ -140,6 +155,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x 3.
+      * natoms x 3. Then all frames are assumed to be provided with the same field.
+      * 3. Then all frames and atoms are provided with the same field.
   **/
   template<typename VALUETYPE>
   void compute (ENERGYTYPE &			ener,
@@ -154,7 +173,8 @@ public:
 		const InputNlist &	lmp_list,
 		const int&			ago,
 		const std::vector<VALUETYPE>&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>&	field = std::vector<VALUETYPE>());
   /**
   * @brief Get the cutoff radius.
   * @return The cutoff radius.
@@ -196,6 +216,7 @@ private:
   int ntypes;
   int dfparam;
   int daparam;
+  int dfield;
   template<typename VALUETYPE>
   void validate_fparam_aparam(const int & nloc,
 			      const std::vector<VALUETYPE> &fparam,
@@ -210,7 +231,8 @@ private:
 		      const int				nghost,
 		      const int &			ago,
 		      const std::vector<VALUETYPE>&	fparam = std::vector<VALUETYPE>(),
-		      const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>());
+		      const std::vector<VALUETYPE>&	aparam = std::vector<VALUETYPE>(),
+              const std::vector<VALUETYPE>&	field = std::vector<VALUETYPE>());
 
   // copy neighbor list info from host
   bool init_nbor;
@@ -264,6 +286,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x dim_field.
+      * natoms x dim_field. Then all frames are assumed to be provided with the same field.
+      * dim_field. Then all frames and atoms are provided with the same field.
   **/
   template<typename VALUETYPE>
   void compute (std::vector<ENERGYTYPE> &		all_ener,
@@ -276,7 +302,8 @@ public:
 		const InputNlist &	lmp_list,
 		const int 				&   ago,
 		const std::vector<VALUETYPE>	&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>	&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>	&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>	&	field = std::vector<VALUETYPE>());
   /**
   * @brief Evaluate the energy, force, virial, atomic energy, and atomic virial by using these DP models.
   * @param[out] all_ener The system energies of all models.
@@ -297,6 +324,10 @@ public:
       * nframes x natoms x dim_aparam.
       * natoms x dim_aparam. Then all frames are assumed to be provided with the same aparam.
       * dim_aparam. Then all frames and atoms are provided with the same aparam.
+  * @param[in] field The field. The array can be of size :
+      * nframes x natoms x dim_field.
+      * natoms x dim_field. Then all frames are assumed to be provided with the same field.
+      * dim_field. Then all frames and atoms are provided with the same field.
   **/
   template<typename VALUETYPE>
   void compute (std::vector<ENERGYTYPE> &		all_ener,
@@ -311,7 +342,8 @@ public:
 		const InputNlist &	lmp_list,
 		const int 				&   ago,
 		const std::vector<VALUETYPE>	&	fparam = std::vector<VALUETYPE>(),
-		const std::vector<VALUETYPE>	&	aparam = std::vector<VALUETYPE>());
+		const std::vector<VALUETYPE>	&	aparam = std::vector<VALUETYPE>(),
+        const std::vector<VALUETYPE>	&	field = std::vector<VALUETYPE>());
   /**
   * @brief Get the cutoff radius.
   * @return The cutoff radius.
@@ -421,6 +453,7 @@ private:
   int ntypes;
   int dfparam;
   int daparam;
+  int dfield;
   template <typename VALUETYPE>
   void validate_fparam_aparam(const int & nloc,
 			      const std::vector<VALUETYPE> &fparam,

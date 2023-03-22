@@ -349,6 +349,7 @@ session_input_tensors (
     const std::vector<VALUETYPE> &	fparam_,
     const std::vector<VALUETYPE> &	aparam_,
     const deepmd::AtomMap&	atommap,
+    const std::vector<VALUETYPE> &	field_,
     const std::string				scope)
 {
   bool b_pbc = (dbox.size() == 9);
@@ -389,6 +390,9 @@ session_input_tensors (
   TensorShape aparam_shape ;
   aparam_shape.AddDim (nframes);
   aparam_shape.AddDim (aparam_.size());
+  TensorShape field_shape ;
+  field_shape.AddDim (nframes);
+  field_shape.AddDim (3);
   
   tensorflow::DataType model_type;
   if(std::is_same<MODELTYPE, double>::value){
@@ -404,6 +408,7 @@ session_input_tensors (
   Tensor box_tensor	(model_type, box_shape);
   Tensor fparam_tensor  (model_type, fparam_shape);
   Tensor aparam_tensor  (model_type, aparam_shape);
+  Tensor field_tensor   (model_type, field_shape);
 
   Tensor type_tensor	(DT_INT32, type_shape);
   Tensor mesh_tensor	(DT_INT32, mesh_shape);
@@ -416,6 +421,7 @@ session_input_tensors (
   auto natoms = natoms_tensor.flat<int> ();  
   auto fparam = fparam_tensor.matrix<MODELTYPE> ();
   auto aparam = aparam_tensor.matrix<MODELTYPE> ();
+  auto field = field_tensor.matrix<MODELTYPE> ();
 
   std::vector<VALUETYPE> dcoord (dcoord_);
   atommap.forward<VALUETYPE> (dcoord.begin(), dcoord_.begin(), 3);
@@ -442,6 +448,9 @@ session_input_tensors (
     }
     for (int jj = 0; jj < aparam_.size(); ++jj){
       aparam(ii, jj) = aparam_[jj];
+    }
+    for (int jj = 0; jj < 3; ++jj){
+      field(ii, jj) = field_[jj];
     }
   }
   if (b_pbc){
@@ -473,6 +482,7 @@ session_input_tensors (
   if (aparam_.size() > 0) {
     input_tensors.push_back({prefix+"t_aparam", aparam_tensor});
   }
+  input_tensors.push_back({prefix+"t_field", field_tensor});
   return nloc;
 }
 
@@ -491,6 +501,7 @@ session_input_tensors (
     const deepmd::AtomMap&	atommap,
     const int					nghost,
     const int					ago,
+    const std::vector<VALUETYPE> &	field_,
     const std::string				scope)
 {
   assert (dbox.size() == 9);
@@ -526,6 +537,9 @@ session_input_tensors (
   TensorShape aparam_shape ;
   aparam_shape.AddDim (nframes);
   aparam_shape.AddDim (aparam_.size());
+  TensorShape field_shape ;
+  field_shape.AddDim (nframes);
+  field_shape.AddDim (3);
   
   tensorflow::DataType model_type;
   if(std::is_same<MODELTYPE, double>::value){
@@ -541,6 +555,7 @@ session_input_tensors (
   Tensor box_tensor	(model_type, box_shape);
   Tensor fparam_tensor  (model_type, fparam_shape);
   Tensor aparam_tensor  (model_type, aparam_shape);
+  Tensor field_tensor   (model_type, field_shape);
 
   Tensor type_tensor	(DT_INT32, type_shape);
   Tensor mesh_tensor	(DT_INT32, mesh_shape);
@@ -553,6 +568,7 @@ session_input_tensors (
   auto natoms = natoms_tensor.flat<int> ();
   auto fparam = fparam_tensor.matrix<MODELTYPE> ();
   auto aparam = aparam_tensor.matrix<MODELTYPE> ();
+  auto field = field_tensor.matrix<MODELTYPE> ();
 
   std::vector<VALUETYPE> dcoord (dcoord_);
   atommap.forward<VALUETYPE> (dcoord.begin(), dcoord_.begin(), 3);
@@ -572,6 +588,9 @@ session_input_tensors (
     }
     for (int jj = 0; jj < aparam_.size(); ++jj){
       aparam(ii, jj) = aparam_[jj];
+    }
+    for (int jj = 0; jj < 3; ++jj){
+      field(ii, jj) = field_[jj];
     }
   }
   
@@ -609,6 +628,7 @@ session_input_tensors (
   if (aparam_.size() > 0) {
     input_tensors.push_back({prefix+"t_aparam", aparam_tensor});
   }
+  input_tensors.push_back({prefix+"t_field", field_tensor});
   return nloc;
 }
 
@@ -984,6 +1004,7 @@ session_input_tensors<double, double> (std::vector<std::pair<std::string, tensor
 		       const std::vector<double> &	fparam_,
 		       const std::vector<double> &	aparam_,
 		       const deepmd::AtomMap&atommap,
+           const std::vector<double> & field_,
 		       const std::string		scope);
 template
 int
@@ -997,6 +1018,7 @@ session_input_tensors<float, double> (std::vector<std::pair<std::string, tensorf
 		       const std::vector<double> &	fparam_,
 		       const std::vector<double> &	aparam_,
 		       const deepmd::AtomMap&atommap,
+           const std::vector<double> & field_,
 		       const std::string		scope);
 
 template
@@ -1011,6 +1033,7 @@ session_input_tensors<double, float> (std::vector<std::pair<std::string, tensorf
 		       const std::vector<float> &	fparam_,
 		       const std::vector<float> &	aparam_,
 		       const deepmd::AtomMap&atommap,
+           const std::vector<float> & field_,
 		       const std::string		scope);
 template
 int
@@ -1024,6 +1047,7 @@ session_input_tensors<float, float> (std::vector<std::pair<std::string, tensorfl
 		       const std::vector<float> &	fparam_,
 		       const std::vector<float> &	aparam_,
 		       const deepmd::AtomMap&atommap,
+           const std::vector<float> & field_,
 		       const std::string		scope);
 
 template
@@ -1040,6 +1064,7 @@ session_input_tensors<double, double> (std::vector<std::pair<std::string, tensor
 		       const deepmd::AtomMap&atommap,
 		       const int			nghost,
 		       const int			ago,
+           const std::vector<double> & field_,
 		       const std::string		scope);
 template
 int
@@ -1055,6 +1080,7 @@ session_input_tensors<float, double> (std::vector<std::pair<std::string, tensorf
 		       const deepmd::AtomMap&atommap,
 		       const int			nghost,
 		       const int			ago,
+           const std::vector<double> & field_,
 		       const std::string		scope);
 
 template
@@ -1071,6 +1097,7 @@ session_input_tensors<double, float> (std::vector<std::pair<std::string, tensorf
 		       const deepmd::AtomMap&atommap,
 		       const int			nghost,
 		       const int			ago,
+           const std::vector<float> & field_,
 		       const std::string		scope);
 template
 int
@@ -1086,4 +1113,5 @@ session_input_tensors<float, float> (std::vector<std::pair<std::string, tensorfl
 		       const deepmd::AtomMap&atommap,
 		       const int			nghost,
 		       const int			ago,
+           const std::vector<float> & field_,
 		       const std::string		scope);

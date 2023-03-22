@@ -16,7 +16,7 @@ from deepmd.env import GLOBAL_TF_FLOAT_PRECISION
 from deepmd.env import GLOBAL_ENER_FLOAT_PRECISION
 from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA, FiniteFieldFittingSeA, FiniteFieldEnerFitting
 from deepmd.descriptor import Descriptor
-from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel
+from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel, FiniteFieldEnerModel
 from deepmd.loss import EnerStdLoss, EnerDipoleLoss, TensorLoss
 from deepmd.utils.errors import GraphTooLargeError
 from deepmd.utils.learning_rate import LearningRateExp
@@ -94,7 +94,7 @@ class DPTrainer (object):
         def fitting_net_init(fitting_type_, descrpt_type_, params):
             if fitting_type_ == 'ener':
                 return EnerFitting(**params)
-            elif fitting_type == 'finitefieldener':
+            elif fitting_type_ == 'finitefieldener':
                 return FiniteFieldEnerFitting(**params)
             elif fitting_type_ == 'dipole':
                 return DipoleFittingSeA(**params)
@@ -174,7 +174,7 @@ class DPTrainer (object):
                     model_param.get('sw_rmax')
                 )
             elif self.fitting_type == 'finitefieldener':
-                self.model = EnerModel(
+                self.model = FiniteFieldEnerModel(
                     self.descrpt,
                     self.fitting,
                     self.typeebd,

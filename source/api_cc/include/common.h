@@ -202,6 +202,7 @@ session_input_tensors (std::vector<std::pair<std::string, tensorflow::Tensor>> &
 		       const std::vector<VALUETYPE> &	fparam_,
 		       const std::vector<VALUETYPE> &	aparam_,
 		       const deepmd::AtomMap&atommap,
+			   const std::vector<VALUETYPE> &	field_,
 		       const std::string		scope = "");
 
 /**
@@ -231,6 +232,7 @@ session_input_tensors (std::vector<std::pair<std::string, tensorflow::Tensor>> &
 		       const deepmd::AtomMap&atommap,
 		       const int			nghost,
 		       const int			ago,
+			   const std::vector<VALUETYPE> &	field_,
 		       const std::string		scope = "");
 
 /**

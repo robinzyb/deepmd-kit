@@ -226,9 +226,9 @@ compute (std::vector<VALUETYPE> &		dfcorr_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
   int ret;
   if (dtype == tensorflow::DT_DOUBLE) {
-    ret = session_input_tensors<double> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, name_scope);
+    ret = session_input_tensors<double> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, std::vector<VALUETYPE>(), name_scope);
   } else {
-    ret = session_input_tensors<float> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, name_scope);
+    ret = session_input_tensors<float> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, std::vector<VALUETYPE>(), name_scope);
   }
   assert (nloc_real == ret);
   // make bond idx map

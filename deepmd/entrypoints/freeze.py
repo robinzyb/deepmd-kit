@@ -181,6 +181,17 @@ def _make_node_names(model_type: str, modifier_type: Optional[str] = None, out_s
             "fitting_attr/dfparam",
             "fitting_attr/daparam",
         ]
+    elif model_type == "finitefieldener":
+        nodes += [
+            "o_energy",
+            "o_force",
+            "o_virial",
+            "o_atom_energy",
+            "o_atom_virial",
+            "fitting_attr/dfparam",
+            "fitting_attr/daparam",
+            "fitting_attr/dfield",
+        ]
     elif model_type == "wfc":
         nodes += [
             "o_wfc",
@@ -219,6 +230,7 @@ def _make_node_names(model_type: str, modifier_type: Optional[str] = None, out_s
             "model_attr/sel_type",
             "model_attr/output_dim",
         ]
+    #elif model_type == ""
     else:
         raise RuntimeError(f"unknow model type {model_type}")
     if modifier_type == "dipole_charge":
@@ -400,6 +412,7 @@ def freeze(
     with tf.Session() as sess:
         saver.restore(sess, input_checkpoint)
         model_type = run_sess(sess, "model_attr/model_type:0", feed_dict={}).decode("utf-8")
+        print(model_type)
         if "modifier_attr/type" in nodes:
             modifier_type = run_sess(sess, "modifier_attr/type:0", feed_dict={}).decode(
                 "utf-8"

@@ -388,7 +388,7 @@ void PairDeepMD::compute(int eflag, int vflag)
       if ( ! (eflag_atom || cvflag_atom) ) {      
 #ifdef HIGH_PREC
   try {
-	deep_pot.compute (dener, dforce, dvirial, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam);
+	deep_pot.compute (dener, dforce, dvirial, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam, field);
   } catch(deepmd::deepmd_exception& e) {
     error->all(FLERR, e.what());
   }
@@ -401,7 +401,7 @@ void PairDeepMD::compute(int eflag, int vflag)
 	vector<float> dvirial_(dvirial.size(), 0);
 	double dener_ = 0;
   try {
-	deep_pot.compute (dener_, dforce_, dvirial_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam);
+	deep_pot.compute (dener_, dforce_, dvirial_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam, field);
   } catch(deepmd::deepmd_exception& e) {
     error->all(FLERR, e.what());
   }
@@ -416,7 +416,7 @@ void PairDeepMD::compute(int eflag, int vflag)
 	vector<double > dvatom (nall * 9, 0);
 #ifdef HIGH_PREC
   try {
-	deep_pot.compute (dener, dforce, dvirial, deatom, dvatom, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam);
+	deep_pot.compute (dener, dforce, dvirial, deatom, dvatom, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam, field);
   } catch(deepmd::deepmd_exception& e) {
     error->all(FLERR, e.what());
   }
@@ -431,7 +431,7 @@ void PairDeepMD::compute(int eflag, int vflag)
 	vector<float> dvatom_(dforce.size(), 0);
 	double dener_ = 0;
   try {
-	deep_pot.compute (dener_, dforce_, dvirial_, deatom_, dvatom_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam);
+	deep_pot.compute (dener_, dforce_, dvirial_, deatom_, dvatom_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam, field);
   } catch(deepmd::deepmd_exception& e) {
     error->all(FLERR, e.what());
   }
@@ -477,7 +477,7 @@ void PairDeepMD::compute(int eflag, int vflag)
       vector<vector<double>> 	all_atom_energy;
       vector<vector<double>> 	all_atom_virial;
       try {
-      deep_pot_model_devi.compute(all_energy, all_force, all_virial, all_atom_energy, all_atom_virial, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam);
+      deep_pot_model_devi.compute(all_energy, all_force, all_virial, all_atom_energy, all_atom_virial, dcoord, dtype, dbox, nghost, lmp_list, ago, fparam, daparam, field);
       } catch(deepmd::deepmd_exception& e) {
         error->all(FLERR, e.what());
       }
@@ -507,7 +507,7 @@ void PairDeepMD::compute(int eflag, int vflag)
       vector<vector<float>> 	all_atom_energy_;
       vector<vector<float>> 	all_atom_virial_;
       try {
-      deep_pot_model_devi.compute(all_energy_, all_force_, all_virial_, all_atom_energy_, all_atom_virial_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam);
+      deep_pot_model_devi.compute(all_energy_, all_force_, all_virial_, all_atom_energy_, all_atom_virial_, dcoord_, dtype, dbox_, nghost, lmp_list, ago, fparam, daparam, field);
       } catch(deepmd::deepmd_exception& e) {
         error->all(FLERR, e.what());
       }
@@ -810,6 +810,7 @@ is_key (const string& input)
   keys.push_back("atomic");
   keys.push_back("relative");
   keys.push_back("relative_v");
+  keys.push_back("field");
 
   for (int ii = 0; ii < keys.size(); ++ii){
     if (input == keys[ii]) {
@@ -871,6 +872,7 @@ void PairDeepMD::settings(int narg, char **arg)
   eps = 0.;
   fparam.clear();
   aparam.clear();
+  field.clear();
   while (iarg < narg) {
     if (! is_key(arg[iarg])) {
       error->all(FLERR,"Illegal pair_style command\nwrong number of parameters\n");
@@ -906,6 +908,19 @@ void PairDeepMD::settings(int narg, char **arg)
 	aparam.push_back(atof(arg[iarg+1+ii]));
       }      
       iarg += 1 + dim_aparam ;
+    }
+    // field part
+    else if (string(arg[iarg]) == string("field")) {
+      for (int ii = 0; ii < 3; ++ii){
+          if (iarg+1+ii >= narg || is_key(arg[iarg+1+ii])) {
+              error->all(FLERR, "invalid field key: should be field x y z");
+          }
+          field.push_back(atof(arg[iarg+1+ii]));
+          
+          
+      }
+      // 3 is the dimension of field, 1 is for the field key
+      iarg += 1 + 3;
     }
     else if (string(arg[iarg]) == string("ttm")) {
 #ifdef USE_TTM
@@ -982,6 +997,7 @@ void PairDeepMD::settings(int narg, char **arg)
     cout << endl
 	 << pre << "rcut in model:      " << cutoff << endl
 	 << pre << "ntypes in model:    " << numb_types << endl;
+   cout << pre << "using field x y z:  " << field[0] << " " << field[1] << " " << field[2] << endl;
     if (dim_fparam > 0) {
       cout << pre << "using fparam(s):    " ;
       for (int ii = 0; ii < dim_fparam; ++ii){

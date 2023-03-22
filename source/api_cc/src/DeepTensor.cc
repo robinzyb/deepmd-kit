@@ -654,11 +654,11 @@ compute_inner (std::vector<VALUETYPE> &		dtensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
     assert (ret == nloc);
     run_model<double> (dtensor_, session, input_tensors, atommap, sel_fwd);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
     assert (ret == nloc);
     run_model<float> (dtensor_, session, input_tensors, atommap, sel_fwd);
   }
@@ -710,11 +710,11 @@ compute_inner (std::vector<VALUETYPE> &		dtensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
     assert (nloc == ret);
     run_model<double> (dtensor_, session, input_tensors, atommap, sel_fwd, nghost);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
     assert (nloc == ret);
     run_model<float> (dtensor_, session, input_tensors, atommap, sel_fwd, nghost);
   }
@@ -765,11 +765,11 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
     assert (ret == nloc);
     run_model<double> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
     assert (ret == nloc);
     run_model<float> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd);
   }
@@ -833,11 +833,11 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
     assert (nloc == ret);
     run_model<double> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd, nghost);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
     assert (nloc == ret);
     run_model<float> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd, nghost);
   }

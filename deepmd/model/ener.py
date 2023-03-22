@@ -10,7 +10,7 @@ from deepmd.env import op_module
 from .model import Model
 from .model_stat import make_stat_input, merge_sys_stat
 
-class EnerModel(Model) :
+class ScalarModel(Model) :
     """Energy model.
     
     Parameters
@@ -35,10 +35,11 @@ class EnerModel(Model) :
     sw_rmin
             The upper boundary of the interpolation between short-range tabulated interaction and DP. It is only required when `use_srtab` is provided.
     """
-    model_type = 'ener'
+    
 
     def __init__ (
             self, 
+            model_name,
             descrpt, 
             fitting, 
             typeebd = None,
@@ -53,6 +54,7 @@ class EnerModel(Model) :
         """
         Constructor
         """
+        self.model_type = model_name
         # descriptor
         self.descrpt = descrpt
         self.rcut = self.descrpt.get_rcut()
@@ -324,3 +326,12 @@ class EnerModel(Model) :
             raise RuntimeError("Unknown model type %s" % model_type)
         if self.typeebd is not None:
             self.typeebd.init_variables(graph, graph_def, suffix=suffix)
+
+
+class EnerModel(ScalarModel):
+    def __init__(self, *args, **kwargs) -> None:
+        ScalarModel.__init__(self, 'ener', *args, **kwargs)
+
+class FiniteFieldEnerModel(ScalarModel):
+    def __init__(self, *args, **kwargs) -> None:
+        ScalarModel.__init__(self, 'finitefieldener', *args, **kwargs)
