@@ -291,6 +291,10 @@ def freeze_graph(sess, input_graph, input_node, freeze_type, modifier, out_graph
     if node_names is None:
         output_node = _make_node_names(freeze_type, modifier, out_suffix=out_suffix)
         different_set = set(output_node) - set(input_node)
+        print("-"*70)
+        print("this is output nodes",output_node)
+        print("-"*70)
+        print("this is input nodes",input_node)
         if different_set:
             log.warning(
                 "The following nodes are not in the graph: %s. "
