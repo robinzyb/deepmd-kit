@@ -1,0 +1,14 @@
+#!/bin/bash
+#SBATCH -N 1
+#SBATCH --ntasks-per-node=1
+#SBATCH -t 96:00:00
+#SBATCH --partition=gpu3
+#SBATCH --gres=gpu:1
+
+# add modulefiles
+module load miniconda/3
+module add cuda/11.3
+module add gcc/7.4.0
+source activate dpff
+
+pycg --package deepmd deepmd/entrypoints/train.py  > output.json

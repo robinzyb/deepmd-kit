@@ -294,6 +294,7 @@ void DP_DeepTensorComputeTensor_variant (
     const VALUETYPE* coord,
     const int* atype,
     const VALUETYPE* cell,
+    const VALUETYPE* field,
     VALUETYPE** tensor,
     int* size
     ) {
@@ -301,13 +302,18 @@ void DP_DeepTensorComputeTensor_variant (
     std::vector<VALUETYPE> coord_(coord, coord+natoms*3);
     std::vector<int> atype_(atype, atype+natoms);
     std::vector<VALUETYPE> cell_;
+    std::vector<VALUETYPE> field_;
     if (cell) {
         // pbc
         cell_.assign(cell, cell+9);
     }
+    if (field) {
+        // field
+        field_.assign(field, field+3);
+    }
     std::vector<VALUETYPE> t;
 
-    dt->dt.compute(t, coord_, atype_, cell_);
+    dt->dt.compute(t, coord_, atype_, cell_, field_);
     // do not know the size of tensor in advance...
     *tensor = new VALUETYPE[t.size()];
     std::copy(t.begin(), t.end(), *tensor);
@@ -321,6 +327,7 @@ void DP_DeepTensorComputeTensor_variant <double> (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     double** tensor,
     int* size
     );
@@ -332,6 +339,7 @@ void DP_DeepTensorComputeTensor_variant <float> (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     float** tensor,
     int* size
     );
@@ -344,6 +352,7 @@ void DP_DeepTensorComputeTensorNList_variant (
     const VALUETYPE* coord,
     const int* atype,
     const VALUETYPE* cell,
+    const VALUETYPE* field,
     const int nghost,
     const DP_Nlist* nlist,
     VALUETYPE** tensor,
@@ -353,13 +362,21 @@ void DP_DeepTensorComputeTensorNList_variant (
     std::vector<VALUETYPE> coord_(coord, coord+natoms*3);
     std::vector<int> atype_(atype, atype+natoms);
     std::vector<VALUETYPE> cell_;
+    std::vector<VALUETYPE> field_;
+
     if (cell) {
         // pbc
         cell_.assign(cell, cell+9);
     }
+
+    if (field) {
+        // field
+        field_.assign(field, field+3);
+    }
+
     std::vector<VALUETYPE> t;
 
-    dt->dt.compute(t, coord_, atype_, cell_, nghost, nlist->nl);
+    dt->dt.compute(t, coord_, atype_, cell_, field_, nghost, nlist->nl);
     // do not know the size of tensor in advance...
     *tensor = new VALUETYPE[t.size()];
     std::copy(t.begin(), t.end(), *tensor);
@@ -373,6 +390,7 @@ void DP_DeepTensorComputeTensorNList_variant <double> (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     const int nghost,
     const DP_Nlist* nlist,
     double** tensor,
@@ -386,6 +404,7 @@ void DP_DeepTensorComputeTensorNList_variant <float> (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     const int nghost,
     const DP_Nlist* nlist,
     float** tensor,
@@ -400,6 +419,7 @@ void DP_DeepTensorCompute_variant (
     const VALUETYPE* coord,
     const int* atype,
     const VALUETYPE* cell,
+    const VALUETYPE* field,
     VALUETYPE* global_tensor,
     VALUETYPE* force,
     VALUETYPE* virial,
@@ -411,13 +431,19 @@ void DP_DeepTensorCompute_variant (
     std::vector<VALUETYPE> coord_(coord, coord+natoms*3);
     std::vector<int> atype_(atype, atype+natoms);
     std::vector<VALUETYPE> cell_;
+    std::vector<VALUETYPE> field_;
     if (cell) {
         // pbc
         cell_.assign(cell, cell+9);
     }
+
+    if (field) {
+        // field
+        field_.assign(field, field+3);
+    }
     std::vector<VALUETYPE> t, f, v, at, av;
 
-    dt->dt.compute(t, f, v, at, av, coord_, atype_, cell_);
+    dt->dt.compute(t, f, v, at, av, coord_, atype_, cell_, field_);
     // copy from C++ vectors to C arrays, if not NULL pointer
     if(global_tensor) std::copy(t.begin(), t.end(), global_tensor);
     if(force) std::copy(f.begin(), f.end(), force);
@@ -438,6 +464,7 @@ void DP_DeepTensorCompute_variant <double> (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     double* global_tensor,
     double* force,
     double* virial,
@@ -453,6 +480,7 @@ void DP_DeepTensorCompute_variant <float> (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     float* global_tensor,
     float* force,
     float* virial,
@@ -469,6 +497,7 @@ void DP_DeepTensorComputeNList_variant (
     const VALUETYPE* coord,
     const int* atype,
     const VALUETYPE* cell,
+    const VALUETYPE* field,
     const int nghost,
     const DP_Nlist* nlist,
     VALUETYPE* global_tensor,
@@ -482,13 +511,18 @@ void DP_DeepTensorComputeNList_variant (
     std::vector<VALUETYPE> coord_(coord, coord+natoms*3);
     std::vector<int> atype_(atype, atype+natoms);
     std::vector<VALUETYPE> cell_;
+    std::vector<VALUETYPE> field_;
     if (cell) {
         // pbc
         cell_.assign(cell, cell+9);
     }
+    if (field) {
+        // field
+        field_.assign(field, field+3);
+    }
     std::vector<VALUETYPE> t, f, v, at, av;
 
-    dt->dt.compute(t, f, v, at, av, coord_, atype_, cell_, nghost, nlist->nl);
+    dt->dt.compute(t, f, v, at, av, coord_, atype_, cell_, field_, nghost, nlist->nl);
     // copy from C++ vectors to C arrays, if not NULL pointer
     if(global_tensor) std::copy(t.begin(), t.end(), global_tensor);
     if(force) std::copy(f.begin(), f.end(), force);
@@ -509,6 +543,7 @@ void DP_DeepTensorComputeNList_variant <double> (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     const int nghost,
     const DP_Nlist* nlist,
     double* global_tensor,
@@ -526,6 +561,7 @@ void DP_DeepTensorComputeNList_variant <float> (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     const int nghost,
     const DP_Nlist* nlist,
     float* global_tensor,
@@ -684,10 +720,11 @@ void DP_DeepTensorComputeTensor (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     double** tensor,
     int* size
     ) {
-    DP_DeepTensorComputeTensor_variant<double>(dt, natoms, coord, atype, cell, tensor, size);
+    DP_DeepTensorComputeTensor_variant<double>(dt, natoms, coord, atype, cell, field, tensor, size);
 }
 
 void DP_DeepTensorComputeTensorf (
@@ -696,10 +733,11 @@ void DP_DeepTensorComputeTensorf (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     float** tensor,
     int* size
     ) {
-    DP_DeepTensorComputeTensor_variant<float>(dt, natoms, coord, atype, cell, tensor, size);
+    DP_DeepTensorComputeTensor_variant<float>(dt, natoms, coord, atype, cell, field, tensor, size);
 }
 
 void DP_DeepTensorComputeTensorNList (
@@ -708,12 +746,13 @@ void DP_DeepTensorComputeTensorNList (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     const int nghost,
     const DP_Nlist* nlist,
     double** tensor,
     int* size
     ) {
-    DP_DeepTensorComputeTensorNList_variant<double>(dt, natoms, coord, atype, cell, nghost, nlist, tensor, size);
+    DP_DeepTensorComputeTensorNList_variant<double>(dt, natoms, coord, atype, cell, field, nghost, nlist, tensor, size);
 }
 
 void DP_DeepTensorComputeTensorNListf (
@@ -722,12 +761,13 @@ void DP_DeepTensorComputeTensorNListf (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     const int nghost,
     const DP_Nlist* nlist,
     float** tensor,
     int* size
     ) {
-    DP_DeepTensorComputeTensorNList_variant<float>(dt, natoms, coord, atype, cell, nghost, nlist, tensor, size);
+    DP_DeepTensorComputeTensorNList_variant<float>(dt, natoms, coord, atype, cell, field, nghost, nlist, tensor, size);
 }
 
 void DP_DeepTensorCompute (
@@ -736,6 +776,7 @@ void DP_DeepTensorCompute (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     double* global_tensor,
     double* force,
     double* virial,
@@ -743,7 +784,7 @@ void DP_DeepTensorCompute (
     double* atomic_virial,
     int* size_at
     ) {
-    DP_DeepTensorCompute_variant<double>(dt, natoms, coord, atype, cell, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
+    DP_DeepTensorCompute_variant<double>(dt, natoms, coord, atype, cell, field, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
 }
 
 void DP_DeepTensorComputef (
@@ -752,6 +793,7 @@ void DP_DeepTensorComputef (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     float* global_tensor,
     float* force,
     float* virial,
@@ -759,7 +801,7 @@ void DP_DeepTensorComputef (
     float* atomic_virial,
     int* size_at
     ) {
-    DP_DeepTensorCompute_variant<float>(dt, natoms, coord, atype, cell, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
+    DP_DeepTensorCompute_variant<float>(dt, natoms, coord, atype, cell, field, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
 }
 
 void DP_DeepTensorComputeNList (
@@ -768,6 +810,7 @@ void DP_DeepTensorComputeNList (
     const double* coord,
     const int* atype,
     const double* cell,
+    const double* field,
     const int nghost,
     const DP_Nlist* nlist,
     double* global_tensor,
@@ -777,7 +820,7 @@ void DP_DeepTensorComputeNList (
     double* atomic_virial,
     int* size_at
     ) {
-    DP_DeepTensorComputeNList_variant<double>(dt, natoms, coord, atype, cell, nghost, nlist, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
+    DP_DeepTensorComputeNList_variant<double>(dt, natoms, coord, atype, cell, field, nghost, nlist, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
 }
 
 void DP_DeepTensorComputeNListf (
@@ -786,6 +829,7 @@ void DP_DeepTensorComputeNListf (
     const float* coord,
     const int* atype,
     const float* cell,
+    const float* field,
     const int nghost,
     const DP_Nlist* nlist,
     float* global_tensor,
@@ -795,7 +839,7 @@ void DP_DeepTensorComputeNListf (
     float* atomic_virial,
     int* size_at
     ) {
-    DP_DeepTensorComputeNList_variant<float>(dt, natoms, coord, atype, cell, nghost, nlist, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
+    DP_DeepTensorComputeNList_variant<float>(dt, natoms, coord, atype, cell, field, nghost, nlist, global_tensor, force, virial, atomic_tensor, atomic_virial, size_at);
 }
 
 double DP_DeepTensorGetCutoff(

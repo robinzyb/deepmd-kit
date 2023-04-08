@@ -38,6 +38,16 @@ ComputeDeeptensorAtom::ComputeDeeptensorAtom(LAMMPS *lmp, int narg, char **arg) 
   // parse args
   std::string model_file = std::string(arg[3]);
 
+  field.clear();
+  if (std::string(arg[4]) == std::string("field")) {
+    for (int ii = 0; ii < 3; ++ii){
+      if (4+ii+1 >= narg) {
+              error->all(FLERR, "invalid field key: should be field x y z");
+      }
+      field.push_back(std::stod(arg[4+ii+1]));
+      }
+  }
+
   // initialize deeptensor
   int gpu_rank = dp.get_node_rank();
   std::string model_file_content = dp.get_file_content(model_file);
@@ -137,8 +147,8 @@ void ComputeDeeptensorAtom::compute_peratom()
 
   // compute tensors
   dt.compute (gtensor, force, virial, atensor, avirial,
-	      dcoord, dtype, dbox, nghost, lmp_list);
-  
+	      dcoord, dtype, dbox, field, nghost, lmp_list);
+
   // store the result in tensor
   int iter_tensor = 0;
   for(int ii = 0; ii < nlocal; ++ii){

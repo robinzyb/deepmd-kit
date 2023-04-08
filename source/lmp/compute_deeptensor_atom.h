@@ -33,6 +33,11 @@ class ComputeDeeptensorAtom : public Compute {
   class NeighList *list;
   deepmd::DeepTensor dt;
   std::vector<int > sel_types;
+  #ifdef HIGH_PREC
+    std::vector<double > field;
+  #else
+    std::vector<float > field;
+  #endif
 };
 
 }

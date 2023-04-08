@@ -25,6 +25,7 @@ is_key (const string& input)
   keys.push_back("type_associate");
   keys.push_back("bond_type");
   keys.push_back("efield");
+  keys.push_back("field");
   for (int ii = 0; ii < keys.size(); ++ii){
     if (input == keys[ii]) {
       return true;
@@ -70,6 +71,13 @@ FixDPLR::FixDPLR(LAMMPS *lmp, int narg, char **arg)
       efield[0] = atof(arg[iarg+1]);
       efield[1] = atof(arg[iarg+2]);
       efield[2] = atof(arg[iarg+3]);
+      iarg += 4;
+    }
+    else if (string(arg[iarg]) == string("field")) {
+      if (iarg+3 > narg) error->all(FLERR,"Illegal fix adapt command, field should be provided 3 float numbers");
+      field[0] = atof(arg[iarg+1]);
+      field[1] = atof(arg[iarg+2]);
+      field[2] = atof(arg[iarg+3]);
       iarg += 4;
     }
     else if (string(arg[iarg]) == string("type_associate")) {
@@ -276,7 +284,7 @@ void FixDPLR::pre_force(int vflag)
   // declear output
   vector<FLOAT_PREC> tensor;
   // compute
-  dpt.compute(tensor, dcoord, dtype, dbox, nghost, lmp_list);
+  dpt.compute(tensor, dcoord, dtype, dbox, field, nghost, lmp_list);
   // cout << "tensor of size " << tensor.size() << endl;
   // cout << "nghost " << nghost << endl;
   // cout << "nall " << dtype.size() << endl;

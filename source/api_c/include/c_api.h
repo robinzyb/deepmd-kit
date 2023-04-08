@@ -286,6 +286,7 @@ extern DP_DeepTensor* DP_NewDeepTensor(const char* c_model);
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[out] tensor Output tensor.
   **/
 extern void DP_DeepTensorComputeTensor (
@@ -294,6 +295,7 @@ extern void DP_DeepTensorComputeTensor (
   const double* coord,
   const int* atype,
   const double* cell,
+  const double* field,
   double** tensor,
   int* size
   );
@@ -305,6 +307,7 @@ extern void DP_DeepTensorComputeTensor (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[out] tensor Output tensor.
 * @param[out] size Output size of the tensor.
   **/
@@ -314,6 +317,7 @@ extern void DP_DeepTensorComputeTensorf (
   const float* coord,
   const int* atype,
   const float* cell,
+  const float* field,
   float** tensor,
   int* size
   );
@@ -325,6 +329,7 @@ extern void DP_DeepTensorComputeTensorf (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[in] nghost The number of ghost atoms.
 * @param[in] nlist The neighbor list.
 * @param[out] tensor Output tensor.
@@ -336,6 +341,7 @@ extern void DP_DeepTensorComputeTensorNList (
   const double* coord,
   const int* atype,
   const double* cell,
+  const double* field,
   const int nghost,
   const DP_Nlist* nlist,
   double** tensor,
@@ -349,6 +355,7 @@ extern void DP_DeepTensorComputeTensorNList (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[in] nghost The number of ghost atoms.
 * @param[in] nlist The neighbor list.
 * @param[out] tensor Output tensor.
@@ -360,6 +367,7 @@ extern void DP_DeepTensorComputeTensorNListf (
   const float* coord,
   const int* atype,
   const float* cell,
+  const float* field,
   const int nghost,
   const DP_Nlist* nlist,
   float** tensor,
@@ -373,6 +381,7 @@ extern void DP_DeepTensorComputeTensorNListf (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[out] global_tensor Output global tensor.
 * @param[out] force Output force. The array should be of size natoms x 3.
 * @param[out] virial Output virial. The array should be of size 9.
@@ -387,6 +396,7 @@ extern void DP_DeepTensorCompute (
   const double* coord,
   const int* atype,
   const double* cell,
+  const double* field,
   double* global_tensor,
   double* force,
   double* virial,
@@ -402,6 +412,7 @@ extern void DP_DeepTensorCompute (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[out] global_tensor Output global tensor.
 * @param[out] force Output force. The array should be of size natoms x 3.
 * @param[out] virial Output virial. The array should be of size 9.
@@ -416,6 +427,7 @@ extern void DP_DeepTensorComputef (
   const float* coord,
   const int* atype,
   const float* cell,
+  const float* field,
   float* global_tensor,
   float* force,
   float* virial,
@@ -431,6 +443,7 @@ extern void DP_DeepTensorComputef (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[in] nghost The number of ghost atoms.
 * @param[in] nlist The neighbor list.
 * @param[out] global_tensor Output global tensor.
@@ -447,6 +460,7 @@ extern void DP_DeepTensorComputeNList (
   const double* coord,
   const int* atype,
   const double* cell,
+  const double* field,
   const int nghost,
   const DP_Nlist* nlist,
   double* global_tensor,
@@ -464,6 +478,7 @@ extern void DP_DeepTensorComputeNList (
 * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
 * @param[in] atype The atom types. The array should contain natoms ints.
 * @param[in] box The cell of the region. The array should be of size 9. Pass NULL if pbc is not used.
+* @param[in] field The field to compute the tensor. The array should be of size natoms x 3.
 * @param[in] nghost The number of ghost atoms.
 * @param[in] nlist The neighbor list.
 * @param[out] global_tensor Output global tensor.
@@ -480,6 +495,7 @@ extern void DP_DeepTensorComputeNListf (
   const float* coord,
   const int* atype,
   const float* cell,
+  const float* field,
   const int nghost,
   const DP_Nlist* nlist,
   float* global_tensor,

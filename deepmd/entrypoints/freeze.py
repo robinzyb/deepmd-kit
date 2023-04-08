@@ -214,6 +214,23 @@ def _make_node_names(model_type: str, modifier_type: Optional[str] = None, out_s
             "model_attr/sel_type",
             "model_attr/output_dim",
         ]
+    elif model_type == "finitefielddipole":
+        nodes += [
+            "o_finitefielddipole",
+            "o_global_finitefielddipole",
+            "o_force",
+            "o_virial",
+            "o_atom_virial",
+            "o_rmat",
+            "o_rmat_deriv",
+            "o_nlist",
+            "o_rij",
+            "descrpt_attr/sel",
+            "descrpt_attr/ndescrpt",
+            "model_attr/sel_type",
+            "model_attr/output_dim",
+            "fitting_attr/dfield",
+        ]
     elif model_type == "polar":
         nodes += [
             "o_polar",
@@ -291,10 +308,10 @@ def freeze_graph(sess, input_graph, input_node, freeze_type, modifier, out_graph
     if node_names is None:
         output_node = _make_node_names(freeze_type, modifier, out_suffix=out_suffix)
         different_set = set(output_node) - set(input_node)
-        print("-"*70)
-        print("this is output nodes",output_node)
-        print("-"*70)
-        print("this is input nodes",input_node)
+        # print("-"*70)
+        # print("this is output nodes",output_node)
+        # print("-"*70)
+        # print("this is input nodes",input_node)
         if different_set:
             log.warning(
                 "The following nodes are not in the graph: %s. "
@@ -415,7 +432,7 @@ def freeze(
     with tf.Session() as sess:
         saver.restore(sess, input_checkpoint)
         model_type = run_sess(sess, "model_attr/model_type:0", feed_dict={}).decode("utf-8")
-        print(model_type)
+        print("the model type in freeze:", model_type)
         if "modifier_attr/type" in nodes:
             modifier_type = run_sess(sess, "modifier_attr/type:0", feed_dict={}).decode(
                 "utf-8"

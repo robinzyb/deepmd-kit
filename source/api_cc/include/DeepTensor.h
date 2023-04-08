@@ -45,18 +45,21 @@ public:
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   **/
   template <typename VALUETYPE>
   void compute (std::vector<VALUETYPE> &	value,
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
-		const std::vector<VALUETYPE> &	box);
+		const std::vector<VALUETYPE> &	box,
+    const std::vector<VALUETYPE> &	field);
   /**
   * @brief Evaluate the value by using this model.
   * @param[out] value The value to evalute, usually would be the atomic tensor.
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   * @param[in] nghost The number of ghost atoms.
   * @param[in] inlist The input neighbour list.
   **/
@@ -65,6 +68,7 @@ public:
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
 		const std::vector<VALUETYPE> &	box, 
+    const std::vector<VALUETYPE> &	field,
 		const int			nghost,
 		const InputNlist &	inlist);
   /**
@@ -75,6 +79,7 @@ public:
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   **/
   template <typename VALUETYPE>
   void compute (std::vector<VALUETYPE> &	global_tensor,
@@ -82,7 +87,8 @@ public:
 		std::vector<VALUETYPE> &	virial,
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
-		const std::vector<VALUETYPE> &	box);
+		const std::vector<VALUETYPE> &	box,
+    const std::vector<VALUETYPE> &	field);
   /**
   * @brief Evaluate the global tensor and component-wise force and virial.
   * @param[out] global_tensor The global tensor to evalute.
@@ -91,6 +97,7 @@ public:
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   * @param[in] nghost The number of ghost atoms.
   * @param[in] inlist The input neighbour list.
   **/
@@ -101,6 +108,7 @@ public:
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
 		const std::vector<VALUETYPE> &	box, 
+    const std::vector<VALUETYPE> &	field,
 		const int			nghost,
 		const InputNlist &	inlist);
   /**
@@ -113,6 +121,7 @@ public:
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   **/
   template <typename VALUETYPE>
   void compute (std::vector<VALUETYPE> &	global_tensor,
@@ -122,7 +131,8 @@ public:
 		std::vector<VALUETYPE> &	atom_virial,
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
-		const std::vector<VALUETYPE> &	box);
+		const std::vector<VALUETYPE> &	box,
+    const std::vector<VALUETYPE> &	field);
   /**
   * @brief Evaluate the global tensor and component-wise force and virial.
   * @param[out] global_tensor The global tensor to evalute.
@@ -133,6 +143,7 @@ public:
   * @param[in] coord The coordinates of atoms. The array should be of size natoms x 3.
   * @param[in] atype The atom types. The list should contain natoms ints.
   * @param[in] box The cell of the region. The array should be of size 9.
+  * @param[in] field The field of the system. The array should be of size 3.
   * @param[in] nghost The number of ghost atoms.
   * @param[in] inlist The input neighbour list.
   **/
@@ -145,6 +156,7 @@ public:
 		const std::vector<VALUETYPE> &	coord,
 		const std::vector<int> &	atype,
 		const std::vector<VALUETYPE> &	box, 
+    const std::vector<VALUETYPE> &	field,
 		const int			nghost,
 		const InputNlist &	inlist);
   /**
@@ -201,12 +213,14 @@ private:
   void compute_inner (std::vector<VALUETYPE> &		value,
 		      const std::vector<VALUETYPE> &	coord,
 		      const std::vector<int> &		atype,
-		      const std::vector<VALUETYPE> &	box);
+		      const std::vector<VALUETYPE> &	box,
+          const std::vector<VALUETYPE> &	field);
   template<typename VALUETYPE>
   void compute_inner (std::vector<VALUETYPE> &		value,
 		      const std::vector<VALUETYPE> &	coord,
 		      const std::vector<int> &		atype,
 		      const std::vector<VALUETYPE> &	box, 
+          const std::vector<VALUETYPE> &	field,
 		      const int				nghost,
 		      const InputNlist&			inlist);
   template<typename VALUETYPE>
@@ -217,7 +231,8 @@ private:
 		      std::vector<VALUETYPE> &	atom_virial,
 		      const std::vector<VALUETYPE> &	coord,
 		      const std::vector<int> &		atype,
-		      const std::vector<VALUETYPE> &	box);
+		      const std::vector<VALUETYPE> &	box,
+          const std::vector<VALUETYPE> &	field);
   template<typename VALUETYPE>
   void compute_inner (std::vector<VALUETYPE> &		global_tensor,
 		      std::vector<VALUETYPE> &	force,
@@ -226,7 +241,8 @@ private:
 		      std::vector<VALUETYPE> &	atom_virial,
 		      const std::vector<VALUETYPE> &	coord,
 		      const std::vector<int> &		atype,
-		      const std::vector<VALUETYPE> &	box, 
+		      const std::vector<VALUETYPE> &	box,
+          const std::vector<VALUETYPE> &	field, 
 		      const int				nghost,
 		      const InputNlist&			inlist);
 };

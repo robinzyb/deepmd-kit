@@ -348,7 +348,8 @@ DeepTensor::
 compute (std::vector<VALUETYPE> &	dtensor_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<VALUETYPE> &	dbox)
+	 const std::vector<VALUETYPE> &	dbox,
+   const std::vector<VALUETYPE> & field)
 {
   std::vector<VALUETYPE> dcoord;
   std::vector<int> datype, fwd_map, bkw_map;
@@ -361,7 +362,7 @@ compute (std::vector<VALUETYPE> &	dtensor_,
   // fwd map
   select_map<VALUETYPE>(dcoord, dcoord_, fwd_map, 3);
   select_map<int>(datype, datype_, fwd_map, 1);
-  compute_inner(dtensor_, dcoord, datype, dbox);
+  compute_inner(dtensor_, dcoord, datype, dbox, field);
 }
 
 template
@@ -370,7 +371,8 @@ DeepTensor::
 compute<double> (std::vector<double> &	dtensor_,
 	 const std::vector<double> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<double> &	dbox);
+	 const std::vector<double> &	dbox,
+   const std::vector<double> & field);
 
 template
 void
@@ -378,7 +380,8 @@ DeepTensor::
 compute<float> (std::vector<float> &	dtensor_,
 	 const std::vector<float> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<float> &	dbox);
+	 const std::vector<float> &	dbox,
+   const std::vector<float> & field);
 
 template <typename VALUETYPE>
 void
@@ -387,6 +390,7 @@ compute (std::vector<VALUETYPE> &	dtensor_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
 	 const std::vector<VALUETYPE> &	dbox, 
+   const std::vector<VALUETYPE> &	field, 
 	 const int			nghost,
 	 const InputNlist &	lmp_list)
 {
@@ -406,7 +410,7 @@ compute (std::vector<VALUETYPE> &	dtensor_,
   nlist_data.shuffle_exclude_empty(fwd_map);  
   InputNlist nlist;
   nlist_data.make_inlist(nlist);
-  compute_inner(dtensor_, dcoord, datype, dbox, nghost_real, nlist);
+  compute_inner(dtensor_, dcoord, datype, dbox, field, nghost_real, nlist);
 }
 
 template
@@ -416,6 +420,7 @@ compute <double> (std::vector<double> &	dtensor_,
 	 const std::vector<double> &	dcoord_,
 	 const std::vector<int> &	datype_,
 	 const std::vector<double> &	dbox, 
+   const std::vector<double> &	field, 
 	 const int			nghost,
 	 const InputNlist &	lmp_list);
 
@@ -426,6 +431,7 @@ compute <float> (std::vector<float> &	dtensor_,
 	 const std::vector<float> &	dcoord_,
 	 const std::vector<int> &	datype_,
 	 const std::vector<float> &	dbox, 
+   const std::vector<float> &	field, 
 	 const int			nghost,
 	 const InputNlist &	lmp_list);
 
@@ -437,10 +443,11 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
 	 std::vector<VALUETYPE> &	dvirial_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<VALUETYPE> &	dbox)
+	 const std::vector<VALUETYPE> &	dbox,
+   const std::vector<VALUETYPE> &	field)
 {
   std::vector<VALUETYPE> tmp_at_, tmp_av_;
-  compute(dglobal_tensor_, dforce_, dvirial_, tmp_at_, tmp_av_, dcoord_, datype_, dbox);
+  compute(dglobal_tensor_, dforce_, dvirial_, tmp_at_, tmp_av_, dcoord_, datype_, dbox, field);
 }
 
 template
@@ -451,7 +458,8 @@ compute <double> (std::vector<double> &	dglobal_tensor_,
 	 std::vector<double> &	dvirial_,
 	 const std::vector<double> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<double> &	dbox);
+	 const std::vector<double> &	dbox,
+   const std::vector<double> &	field);
 
 template
 void
@@ -461,7 +469,8 @@ compute <float> (std::vector<float> &	dglobal_tensor_,
 	 std::vector<float> &	dvirial_,
 	 const std::vector<float> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<float> &	dbox);
+	 const std::vector<float> &	dbox,
+   const std::vector<float> &	field);
 
 template <typename VALUETYPE>
 void
@@ -472,11 +481,12 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
 	 const std::vector<VALUETYPE> &	dbox, 
+   const std::vector<VALUETYPE> &	field,
 	 const int			nghost,
 	 const InputNlist &	lmp_list)
 {
   std::vector<VALUETYPE> tmp_at_, tmp_av_;
-  compute(dglobal_tensor_, dforce_, dvirial_, tmp_at_, tmp_av_, dcoord_, datype_, dbox, nghost, lmp_list);
+  compute(dglobal_tensor_, dforce_, dvirial_, tmp_at_, tmp_av_, dcoord_, datype_, dbox, field, nghost, lmp_list);
 }
 
 template
@@ -488,6 +498,7 @@ compute <double> (std::vector<double> &	dglobal_tensor_,
    const std::vector<double> &	dcoord_,
    const std::vector<int> &	datype_,
    const std::vector<double> &	dbox, 
+   const std::vector<double> &	field,
    const int			nghost,
    const InputNlist &	lmp_list);
 
@@ -500,6 +511,7 @@ compute <float> (std::vector<float> &	dglobal_tensor_,
    const std::vector<float> &	dcoord_,
    const std::vector<int> &	datype_,
    const std::vector<float> &	dbox, 
+   const std::vector<float> &	field,
    const int			nghost,
    const InputNlist &	lmp_list);
 
@@ -513,7 +525,8 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
 	 std::vector<VALUETYPE> &	datom_virial_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<VALUETYPE> &	dbox)
+	 const std::vector<VALUETYPE> &	dbox,
+   const std::vector<VALUETYPE> &	field)
 {
   std::vector<VALUETYPE> dcoord, dforce, datom_virial;
   std::vector<int> datype, fwd_map, bkw_map;
@@ -526,7 +539,7 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
   // fwd map
   select_map<VALUETYPE>(dcoord, dcoord_, fwd_map, 3);
   select_map<int>(datype, datype_, fwd_map, 1);
-  compute_inner(dglobal_tensor_, dforce, dvirial_, datom_tensor_, datom_virial, dcoord, datype, dbox);
+  compute_inner(dglobal_tensor_, dforce, dvirial_, datom_tensor_, datom_virial, dcoord, datype, dbox, field);
   // bkw map
   dforce_.resize(odim * fwd_map.size() * 3);
   for(int kk = 0; kk < odim; ++kk){
@@ -548,7 +561,8 @@ compute <double> (std::vector<double> &	dglobal_tensor_,
    std::vector<double> &	datom_virial_,
    const std::vector<double> &	dcoord_,
    const std::vector<int> &	datype_,
-   const std::vector<double> &	dbox);
+   const std::vector<double> &	dbox,
+   const std::vector<double> &	field);
 
 template
 void
@@ -560,7 +574,8 @@ compute <float> (std::vector<float> &	dglobal_tensor_,
    std::vector<float> &	datom_virial_,
    const std::vector<float> &	dcoord_,
    const std::vector<int> &	datype_,
-   const std::vector<float> &	dbox);
+   const std::vector<float> &	dbox,
+   const std::vector<float> &	field);
 
 template <typename VALUETYPE>
 void
@@ -572,7 +587,8 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
 	 std::vector<VALUETYPE> &	datom_virial_,
 	 const std::vector<VALUETYPE> &	dcoord_,
 	 const std::vector<int> &	datype_,
-	 const std::vector<VALUETYPE> &	dbox, 
+	 const std::vector<VALUETYPE> &	dbox,
+   const std::vector<VALUETYPE> &	field,
 	 const int			nghost,
 	 const InputNlist &	lmp_list)
 {
@@ -592,7 +608,7 @@ compute (std::vector<VALUETYPE> &	dglobal_tensor_,
   nlist_data.shuffle_exclude_empty(fwd_map);  
   InputNlist nlist;
   nlist_data.make_inlist(nlist);
-  compute_inner(dglobal_tensor_, dforce, dvirial_, datom_tensor_, datom_virial, dcoord, datype, dbox, nghost_real, nlist);
+  compute_inner(dglobal_tensor_, dforce, dvirial_, datom_tensor_, datom_virial, dcoord, datype, dbox, field, nghost_real, nlist);
   // bkw map
   dforce_.resize(odim * fwd_map.size() * 3);
   for(int kk = 0; kk < odim; ++kk){
@@ -615,6 +631,7 @@ compute <double> (std::vector<double> &	dglobal_tensor_,
    const std::vector<double> &	dcoord_,
    const std::vector<int> &	datype_,
    const std::vector<double> &	dbox, 
+   const std::vector<double> &  field,
    const int			nghost,
    const InputNlist &	lmp_list);
 
@@ -628,7 +645,8 @@ compute <float> (std::vector<float> &	dglobal_tensor_,
    std::vector<float> &	datom_virial_,
    const std::vector<float> &	dcoord_,
    const std::vector<int> &	datype_,
-   const std::vector<float> &	dbox, 
+   const std::vector<float> &	dbox,
+   const std::vector<float> &  field,
    const int			nghost,
    const InputNlist &	lmp_list);
 
@@ -639,7 +657,8 @@ DeepTensor::
 compute_inner (std::vector<VALUETYPE> &		dtensor_,
 	       const std::vector<VALUETYPE> &	dcoord_,
 	       const std::vector<int> &		datype_,
-	       const std::vector<VALUETYPE> &	dbox)
+	       const std::vector<VALUETYPE> &	dbox,
+         const std::vector<VALUETYPE> &	field)
 {
   int nall = dcoord_.size() / 3;
   int nloc = nall;
@@ -654,11 +673,11 @@ compute_inner (std::vector<VALUETYPE> &		dtensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, field, name_scope);
     assert (ret == nloc);
     run_model<double> (dtensor_, session, input_tensors, atommap, sel_fwd);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, field, name_scope);
     assert (ret == nloc);
     run_model<float> (dtensor_, session, input_tensors, atommap, sel_fwd);
   }
@@ -670,7 +689,8 @@ DeepTensor::
 compute_inner <double> (std::vector<double> &		dtensor_,
       const std::vector<double> &	dcoord_,
       const std::vector<int> &		datype_,
-      const std::vector<double> &	dbox);
+      const std::vector<double> &	dbox,
+      const std::vector<double> &	field);
 
 template
 void
@@ -678,7 +698,8 @@ DeepTensor::
 compute_inner <float> (std::vector<float> &		dtensor_,
       const std::vector<float> &	dcoord_,
       const std::vector<int> &		datype_,
-      const std::vector<float> &	dbox);
+      const std::vector<float> &	dbox,
+      const std::vector<float> &	field);
 
 template <typename VALUETYPE>
 void
@@ -686,7 +707,8 @@ DeepTensor::
 compute_inner (std::vector<VALUETYPE> &		dtensor_,
 	       const std::vector<VALUETYPE> &	dcoord_,
 	       const std::vector<int> &		datype_,
-	       const std::vector<VALUETYPE> &	dbox, 
+	       const std::vector<VALUETYPE> &	dbox,
+         const std::vector<VALUETYPE> &	field, 
 	       const int			nghost,
 	       const InputNlist &	nlist_)
 {
@@ -710,11 +732,11 @@ compute_inner (std::vector<VALUETYPE> &		dtensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, field, name_scope);
     assert (nloc == ret);
     run_model<double> (dtensor_, session, input_tensors, atommap, sel_fwd, nghost);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, field, name_scope);
     assert (nloc == ret);
     run_model<float> (dtensor_, session, input_tensors, atommap, sel_fwd, nghost);
   }
@@ -727,6 +749,7 @@ compute_inner <double> (std::vector<double> &		dtensor_,
       const std::vector<double> &	dcoord_,
       const std::vector<int> &		datype_,
       const std::vector<double> &	dbox, 
+      const std::vector<double> &	field,
       const int			nghost,
       const InputNlist &	nlist_);
 
@@ -737,6 +760,7 @@ compute_inner <float> (std::vector<float> &		dtensor_,
       const std::vector<float> &	dcoord_,
       const std::vector<int> &		datype_,
       const std::vector<float> &	dbox, 
+      const std::vector<float> &	field,
       const int			nghost,
       const InputNlist &	nlist_);
 
@@ -750,7 +774,8 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
 	       std::vector<VALUETYPE> &	datom_virial_,
 	       const std::vector<VALUETYPE> &	dcoord_,
 	       const std::vector<int> &		datype_,
-	       const std::vector<VALUETYPE> &	dbox)
+	       const std::vector<VALUETYPE> &	dbox,
+         const std::vector<VALUETYPE> & field)
 {
   int nall = dcoord_.size() / 3;
   int nloc = nall;
@@ -765,11 +790,11 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, field, name_scope);
     assert (ret == nloc);
     run_model<double> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, cell_size, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, field, name_scope);
     assert (ret == nloc);
     run_model<float> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd);
   }
@@ -785,7 +810,8 @@ compute_inner <double> (std::vector<double> &		dglobal_tensor_,
       std::vector<double> &	datom_virial_,
       const std::vector<double> &	dcoord_,
       const std::vector<int> &		datype_,
-      const std::vector<double> &	dbox);
+      const std::vector<double> &	dbox,
+      const std::vector<double> & field);
 
 template
 void
@@ -797,7 +823,8 @@ compute_inner <float> (std::vector<float> &		dglobal_tensor_,
       std::vector<float> &	datom_virial_,
       const std::vector<float> &	dcoord_,
       const std::vector<int> &		datype_,
-      const std::vector<float> &	dbox);
+      const std::vector<float> &	dbox,
+      const std::vector<float> &  field);
 
 template <typename VALUETYPE>
 void
@@ -810,6 +837,7 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
 	       const std::vector<VALUETYPE> &	dcoord_,
 	       const std::vector<int> &		datype_,
 	       const std::vector<VALUETYPE> &	dbox, 
+         const std::vector<VALUETYPE> & field,
 	       const int			nghost,
 	       const InputNlist &	nlist_)
 {
@@ -833,11 +861,11 @@ compute_inner (std::vector<VALUETYPE> &		dglobal_tensor_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
 
   if (dtype == tensorflow::DT_DOUBLE) {
-    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <double> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, field, name_scope);
     assert (nloc == ret);
     run_model<double> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd, nghost);
   } else {
-    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, std::vector<VALUETYPE>(), name_scope);
+    int ret = session_input_tensors <float> (input_tensors, dcoord_, ntypes, datype_, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost, 0, field, name_scope);
     assert (nloc == ret);
     run_model<float> (dglobal_tensor_, dforce_, dvirial_, datom_tensor_, datom_virial_, session, input_tensors, atommap, sel_fwd, nghost);
   }
@@ -853,7 +881,8 @@ compute_inner <double> (std::vector<double> &		dglobal_tensor_,
       std::vector<double> &	datom_virial_,
       const std::vector<double> &	dcoord_,
       const std::vector<int> &		datype_,
-      const std::vector<double> &	dbox, 
+      const std::vector<double> &	dbox,
+      const std::vector<double> & field,
       const int			nghost,
       const InputNlist &	nlist_);
 
@@ -868,5 +897,6 @@ compute_inner <float> (std::vector<float> &		dglobal_tensor_,
       const std::vector<float> &	dcoord_,
       const std::vector<int> &		datype_,
       const std::vector<float> &	dbox, 
+      const std::vector<float> & field,
       const int			nghost,
       const InputNlist &	nlist_);

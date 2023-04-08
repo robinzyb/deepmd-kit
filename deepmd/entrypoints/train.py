@@ -12,7 +12,7 @@ import numpy as np
 
 from deepmd.common import data_requirement, expand_sys_str, j_loader, j_must_have
 from deepmd.env import tf, reset_default_tf_session_config, GLOBAL_ENER_FLOAT_PRECISION
-from deepmd.infer.data_modifier import DipoleChargeModifier
+from deepmd.infer.data_modifier import DipoleChargeModifier, FiniteFieldDipoleChargeModifier
 from deepmd.train.run_options import BUILD, CITATION, WELCOME, RunOptions
 from deepmd.train.trainer import DPTrainer
 from deepmd.utils import random as dp_random
@@ -264,6 +264,14 @@ def get_modifier(modi_data=None):
                 modi_data["sys_charge_map"],
                 modi_data["ewald_h"],
                 modi_data["ewald_beta"],
+            )
+        elif modi_data["type"] == "finitefielddipole_charge":
+            modifier = FiniteFieldDipoleChargeModifier(
+                modi_data["model_name"],
+                modi_data["model_charge_map"],
+                modi_data["sys_charge_map"],
+                modi_data["ewald_h"],
+                modi_data["ewald_beta"]
             )
         else:
             raise RuntimeError("unknown modifier type " + str(modi_data["type"]))

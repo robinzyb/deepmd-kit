@@ -16,7 +16,7 @@ from deepmd.env import GLOBAL_TF_FLOAT_PRECISION
 from deepmd.env import GLOBAL_ENER_FLOAT_PRECISION
 from deepmd.fit import EnerFitting, PolarFittingSeA, DipoleFittingSeA, FiniteFieldFittingSeA, FiniteFieldEnerFitting
 from deepmd.descriptor import Descriptor
-from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel, FiniteFieldEnerModel
+from deepmd.model import EnerModel, WFCModel, DipoleModel, PolarModel, GlobalPolarModel, MultiModel, FiniteFieldEnerModel, FiniteFieldDipoleModel
 from deepmd.loss import EnerStdLoss, EnerDipoleLoss, TensorLoss
 from deepmd.utils.errors import GraphTooLargeError
 from deepmd.utils.learning_rate import LearningRateExp
@@ -98,7 +98,7 @@ class DPTrainer (object):
                 return FiniteFieldEnerFitting(**params)
             elif fitting_type_ == 'dipole':
                 return DipoleFittingSeA(**params)
-            elif fitting_type_ == 'finitefieldwfc':
+            elif fitting_type_ == 'finitefielddipole':
                 return FiniteFieldFittingSeA(**params)
             elif fitting_type_ == 'polar':
                 return PolarFittingSeA(**params)
@@ -206,8 +206,8 @@ class DPTrainer (object):
                     model_param.get('data_stat_nbatch', 10),
                     model_param.get('data_stat_protect', 1e-2)
                 )
-            elif self.fitting_type == 'finitefieldwfc':
-                self.model = DipoleModel(
+            elif self.fitting_type == 'finitefielddipole':
+                self.model = FiniteFieldDipoleModel(
                     self.descrpt,
                     self.fitting,
                     self.typeebd,
@@ -300,10 +300,10 @@ class DPTrainer (object):
                                   tensor_size=9,
                                   atomic=False,
                                   label_name='polarizability')
-            elif _fitting_type == 'finitefieldwfc':
+            elif _fitting_type == 'finitefielddipole':
                 loss = TensorLoss(_loss_param,
                                   model=_fitting,
-                                  tensor_name='dipole',
+                                  tensor_name='finitefielddipole',
                                   tensor_size=3,
                                   label_name='dipole')
             

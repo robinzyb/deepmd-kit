@@ -251,6 +251,9 @@ class WFCModel(TensorModel):
     def __init__(self, *args, **kwargs) -> None:
         TensorModel.__init__(self, 'wfc', *args, **kwargs)
 
+class FiniteFieldDipoleModel(TensorModel):
+    def __init__(self, *args, **kwargs) -> None:
+        TensorModel.__init__(self, 'finitefielddipole', *args, **kwargs)
 
 class DipoleModel(TensorModel):
     def __init__(self, *args, **kwargs) -> None:

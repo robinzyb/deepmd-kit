@@ -381,7 +381,7 @@ def fitting_dipole():
         Argument("seed", [int,None], optional = True, doc = doc_seed)
     ]    
 
-def fitting_finitefieldwfc():
+def fitting_finitefielddipole():
     doc_neuron = 'The number of neurons in each hidden layers of the fitting net. When two hidden layers are of the same size, a skip connection is built.'
     doc_activation_function = f'The activation function in the fitting net. Supported activation functions are {list_to_doc(ACTIVATION_FN_DICT.keys())} Note that "gelu" denotes the custom operator version, and "gelu_tf" denotes the TF standard version.'
     doc_resnet_dt = 'Whether to use a "Timestep" in the skip connection'
@@ -436,7 +436,7 @@ def fitting_variant_type_args():
     return Variant("type", [Argument("ener", dict, fitting_ener()),
                             Argument("dipole", dict, fitting_dipole()),
                             Argument("polar", dict, fitting_polar()),
-                            Argument("finitefieldwfc", dict, fitting_finitefieldwfc()),
+                            Argument("finitefielddipole", dict, fitting_finitefielddipole()),
                             Argument("finitefieldener", dict, fitting_finitefieldener())
                             ], 
                    optional = True,
@@ -460,6 +460,20 @@ def modifier_dipole_charge():
         Argument("ewald_h", float, optional = True, default = 1.0, doc = doc_ewald_h),        
     ]
 
+def modifier_finitefielddipole_charge():
+    doc_model_name = "The name of the frozen dipole model file."
+    doc_model_charge_map = f"The charge of the WFCC. The list length should be the same as the {make_link('sel_type', 'model/fitting_net[dipole]/sel_type')}. "
+    doc_sys_charge_map = f"The charge of real atoms. The list length should be the same as the {make_link('type_map', 'model/type_map')}"
+    doc_ewald_h = f"The grid spacing of the FFT grid. Unit is A"
+    doc_ewald_beta = f"The splitting parameter of Ewald sum. Unit is A^{-1}"
+    
+    return [
+        Argument("model_name", str, optional = False, doc = doc_model_name),
+        Argument("model_charge_map", list, optional = False, doc = doc_model_charge_map),
+        Argument("sys_charge_map", list, optional = False, doc = doc_sys_charge_map),
+        Argument("ewald_beta", float, optional = True, default = 0.4, doc = doc_ewald_beta),
+        Argument("ewald_h", float, optional = True, default = 1.0, doc = doc_ewald_h),        
+    ]
 
 def modifier_variant_type_args():
     doc_modifier_type = "The type of modifier. See explanation below.\n\n\
@@ -467,6 +481,7 @@ def modifier_variant_type_args():
     return Variant("type", 
                    [
                        Argument("dipole_charge", dict, modifier_dipole_charge()),
+                       Argument("finitefielddipole_charge", dict, modifier_finitefielddipole_charge()),
                    ],
                    optional = False,
                    doc = doc_modifier_type)

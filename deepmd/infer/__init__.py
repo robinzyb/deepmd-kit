@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Union
 
 from .data_modifier import DipoleChargeModifier
-from .deep_dipole import DeepDipole
+from .deep_dipole import DeepDipole, DeepFiniteFieldDipole
 from .deep_eval import DeepEval
 from .deep_polar import DeepGlobalPolar, DeepPolar
 from .deep_pot import DeepPot
@@ -15,6 +15,7 @@ from .model_devi import calc_model_devi
 __all__ = [
     "DeepPotential",
     "DeepDipole",
+    "DeepFiniteFieldDipole",
     "DeepEval",
     "DeepGlobalPolar",
     "DeepPolar",
@@ -30,7 +31,7 @@ def DeepPotential(
     model_file: Union[str, Path],
     load_prefix: str = "load",
     default_tf_graph: bool = False,
-) -> Union[DeepDipole, DeepGlobalPolar, DeepPolar, DeepPot, DeepWFC]:
+) -> Union[DeepDipole, DeepFiniteFieldDipole, DeepGlobalPolar, DeepPolar, DeepPot, DeepWFC]:
     """Factory function that will inialize appropriate potential read from `model_file`.
 
     Parameters
@@ -62,6 +63,8 @@ def DeepPotential(
         dp = DeepPot(mf, load_prefix=load_prefix, default_tf_graph=default_tf_graph)
     elif model_type == "dipole":
         dp = DeepDipole(mf, load_prefix=load_prefix, default_tf_graph=default_tf_graph)
+    elif model_type == "finitefielddipole":
+        dp = DeepFiniteFieldDipole(mf, load_prefix=load_prefix, default_tf_graph=default_tf_graph)
     elif model_type == "polar":
         dp = DeepPolar(mf, load_prefix=load_prefix, default_tf_graph=default_tf_graph)
     elif model_type == "global_polar":

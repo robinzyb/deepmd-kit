@@ -11,7 +11,7 @@ from deepmd.utils.data import DeepmdData
 from deepmd.utils.weight_avg import weighted_average
 
 if TYPE_CHECKING:
-    from deepmd.infer import DeepDipole, DeepPolar, DeepPot, DeepWFC
+    from deepmd.infer import DeepDipole, DeepPolar, DeepPot, DeepWFC, DeepFiniteFieldDipole
     from deepmd.infer.deep_tensor import DeepTensor
 
 __all__ = ["test"]
@@ -90,6 +90,8 @@ def test(
             )
         elif dp.model_type == "dipole":
             err = test_dipole(dp, data, numb_test, detail_file, atomic)
+        elif dp.model_type == "finitefielddipole":
+            err = test_finitefielddipole(dp, data, numb_test, detail_file, atomic)
         elif dp.model_type == "polar":
             err = test_polar(dp, data, numb_test, detail_file, atomic=atomic)
         elif dp.model_type == "global_polar":   # should not appear in this new version
@@ -375,7 +377,11 @@ def run_test(dp: "DeepTensor", test_data: dict, numb_test: int):
     coord = test_data["coord"][:numb_test].reshape([numb_test, -1])
     box = test_data["box"][:numb_test]
     atype = test_data["type"][0]
-    prediction = dp.eval(coord, box, atype)
+    if "field" in test_data:
+        field = test_data["field"][:numb_test]
+        prediction = dp.eval(coord, box, atype, field)
+    else:
+        prediction = dp.eval(coord, box, atype)
 
     return prediction.reshape([numb_test, -1]), numb_test, atype
 
@@ -626,3 +632,89 @@ def print_dipole_sys_avg(avg):
         array with summaries
     """
     log.info(f"Dipole  RMSE         : {avg['rmse']:e} eV/A")
+
+def test_finitefielddipole(
+    dp: "DeepFiniteFieldDipole",
+    data: DeepmdData,
+    numb_test: int,
+    detail_file: Optional[str],
+    atomic: bool,
+) -> Tuple[List[np.ndarray], List[int]]:
+    """Test energy type model.
+
+    Parameters
+    ----------
+    dp : DeepPot
+        instance of deep potential
+    data: DeepmdData
+        data container object
+    numb_test : int
+        munber of tests to do
+    detail_file : Optional[str]
+        file where test details will be output
+    atomic : bool
+        whether atomic dipole is provided
+
+    Returns
+    -------
+    Tuple[List[np.ndarray], List[int]]
+        arrays with results and their shapes
+    """
+    data.add(
+        "dipole" if not atomic else "atomic_dipole",
+        3, 
+        atomic=atomic, 
+        must=True, 
+        high_prec=False, 
+        type_sel=dp.get_sel_type()
+    )
+    data.add(
+        "field",
+         3, 
+         atomic=False, 
+         must=True, 
+         high_prec=False
+    )
+    
+    test_data = data.get_test()
+    dipole, numb_test, atype = run_test(dp, test_data, numb_test)
+
+    sel_type = dp.get_sel_type()
+    sel_natoms = 0
+    for ii in sel_type:
+        sel_natoms += sum(atype == ii)
+    
+    # do summation in atom dimension
+    if not atomic:
+        dipole = np.sum(dipole.reshape((dipole.shape[0], -1, 3)),axis=1)
+        rmse_f = rmse(dipole - test_data["dipole"][:numb_test])
+        rmse_fs = rmse_f / np.sqrt(sel_natoms)
+        rmse_fa = rmse_f / sel_natoms
+    else:
+        rmse_f = rmse(dipole - test_data["atomic_dipole"][:numb_test])
+    
+    log.info(f"# number of test data : {numb_test:d}")
+    log.info(f"Dipole  RMSE       : {rmse_f:e}")
+    if not atomic:
+        log.info(f"Dipole  RMSE/sqrtN : {rmse_fs:e}")
+        log.info(f"Dipole  RMSE/N     : {rmse_fa:e}")
+    log.info(f"The unit of error is the same as the unit of provided label.")
+
+    if detail_file is not None:
+        detail_path = Path(detail_file)
+
+        pe = np.concatenate(
+            (
+                np.reshape(test_data["atomic_dipole"][:numb_test], [-1, 3]),
+                np.reshape(dipole, [-1, 3]),
+            ),
+            axis=1,
+        )
+        np.savetxt(
+            detail_path.with_suffix(".out"),
+            pe,
+            header="data_x data_y data_z pred_x pred_y pred_z",
+        )
+    return {
+        'rmse' : (rmse_f, dipole.size)
+    }
