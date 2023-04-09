@@ -271,6 +271,27 @@ def _make_node_names(model_type: str, modifier_type: Optional[str] = None, out_s
             "o_dm_virial",
             "o_dm_av",
         ]
+    elif modifier_type == "finitefielddipole_charge":
+        nodes += [
+            "modifier_attr/type",
+            "modifier_attr/mdl_name",
+            "modifier_attr/mdl_charge_map",
+            "modifier_attr/sys_charge_map",
+            "modifier_attr/ewald_h",
+            "modifier_attr/ewald_beta",
+            "finitefielddipole_charge/model_type",
+            "finitefielddipole_charge/descrpt_attr/rcut",
+            "finitefielddipole_charge/descrpt_attr/ntypes",
+            "finitefielddipole_charge/model_attr/tmap",
+            "finitefielddipole_charge/model_attr/model_type",
+            "finitefielddipole_charge/model_attr/model_version",
+            "o_dm_force",
+            "finitefielddipole_charge/model_attr/sel_type",
+            "finitefielddipole_charge/o_finitefielddipole",
+            "finitefielddipole_charge/model_attr/output_dim",
+            "o_dm_virial",
+            "o_dm_av",
+        ]
     if out_suffix != '':
         for ind in range(len(nodes)):
             if (nodes[ind][:2] == 'o_' and nodes[ind] not in ["o_rmat", "o_rmat_deriv", "o_nlist", "o_rij"]) \

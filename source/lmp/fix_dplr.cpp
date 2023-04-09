@@ -57,6 +57,7 @@ FixDPLR::FixDPLR(LAMMPS *lmp, int narg, char **arg)
   int iarg = 3;
   vector<int> map_vec;
   bond_type.clear();
+  field.clear();
   while (iarg < narg) {
     if (! is_key(arg[iarg])) {
       error->all(FLERR,"Illegal pair_style command\nwrong number of parameters\n");
@@ -65,6 +66,7 @@ FixDPLR::FixDPLR(LAMMPS *lmp, int narg, char **arg)
       if (iarg+1 > narg) error->all(FLERR,"Illegal fix adapt command");
       model = string(arg[iarg+1]);
       iarg += 2;
+      std::cout << "model in dplr is:" << model << std::endl;
     }
     else if (string(arg[iarg]) == string("efield")) {
       if (iarg+3 > narg) error->all(FLERR,"Illegal fix adapt command, efield should be provided 3 float numbers");
@@ -75,10 +77,11 @@ FixDPLR::FixDPLR(LAMMPS *lmp, int narg, char **arg)
     }
     else if (string(arg[iarg]) == string("field")) {
       if (iarg+3 > narg) error->all(FLERR,"Illegal fix adapt command, field should be provided 3 float numbers");
-      field[0] = atof(arg[iarg+1]);
-      field[1] = atof(arg[iarg+2]);
-      field[2] = atof(arg[iarg+3]);
+      field.push_back(atof(arg[iarg+1]));
+      field.push_back(atof(arg[iarg+2]));
+      field.push_back(atof(arg[iarg+3]));
       iarg += 4;
+      std::cout << "field in dplr is:" << field[0] << " " << field[1] << " " << field[2] << std::endl;
     }
     else if (string(arg[iarg]) == string("type_associate")) {
       int iend = iarg+1;
@@ -109,8 +112,12 @@ FixDPLR::FixDPLR(LAMMPS *lmp, int narg, char **arg)
 
   // dpt.init(model);
   // dtm.init("frozen_model.pb");
-  dpt.init(model, 0, "dipole_charge");
-  dtm.init(model, 0, "dipole_charge");
+  std::cout << "dplr before init" << std::endl;
+  dpt.init(model, 0, "finitefielddipole_charge");
+  std::cout << "init tensor model ok " << std::endl;
+  dtm.init(model, 0, "finitefielddipole_charge");
+  std::cout << "init short-range model ok " << std::endl;
+  std::cout << "dplr after init" << std::endl;
 
   sel_type = dpt.sel_types();
   sort(sel_type.begin(), sel_type.end());
@@ -444,7 +451,7 @@ void FixDPLR::post_force(int vflag)
   // output vects
   vector<FLOAT_PREC> dfcorr, dvcorr;
   // compute
-  dtm.compute(dfcorr, dvcorr, dcoord, dtype, dbox, valid_pairs, dfele, nghost, lmp_list);
+  dtm.compute(dfcorr, dvcorr, dcoord, dtype, dbox, field, valid_pairs, dfele, nghost, lmp_list);
   assert(dfcorr.size() == dcoord.size());
   assert(dfcorr.size() == nall * 3);
   // backward communication of fcorr

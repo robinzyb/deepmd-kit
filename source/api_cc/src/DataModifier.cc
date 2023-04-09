@@ -178,6 +178,7 @@ compute (std::vector<VALUETYPE> &		dfcorr_,
 	 const std::vector<VALUETYPE> &		dcoord_,
 	 const std::vector<int> &		datype_,
 	 const std::vector<VALUETYPE> &		dbox, 
+   const std::vector<VALUETYPE> &		field,
 	 const std::vector<std::pair<int,int>>&	pairs,
 	 const std::vector<VALUETYPE> &		delef_, 
 	 const int				nghost,
@@ -226,9 +227,9 @@ compute (std::vector<VALUETYPE> &		dfcorr_,
   std::vector<std::pair<std::string, Tensor>> input_tensors;
   int ret;
   if (dtype == tensorflow::DT_DOUBLE) {
-    ret = session_input_tensors<double> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, std::vector<VALUETYPE>(), name_scope);
+    ret = session_input_tensors<double> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, field, name_scope);
   } else {
-    ret = session_input_tensors<float> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, std::vector<VALUETYPE>(), name_scope);
+    ret = session_input_tensors<float> (input_tensors, dcoord_real, ntypes, datype_real, dbox, nlist, std::vector<VALUETYPE>(), std::vector<VALUETYPE>(), atommap, nghost_real, 0, field, name_scope);
   }
   assert (nloc_real == ret);
   // make bond idx map
@@ -326,6 +327,7 @@ compute <double> (std::vector<double> &		dfcorr_,
 	 const std::vector<double> &		dcoord_,
 	 const std::vector<int> &		datype_,
 	 const std::vector<double> &		dbox, 
+   const std::vector<double> &    field, 
 	 const std::vector<std::pair<int,int>>&	pairs,
 	 const std::vector<double> &		delef_, 
 	 const int				nghost,
@@ -339,6 +341,7 @@ compute <float> (std::vector<float> &		dfcorr_,
 	 const std::vector<float> &		dcoord_,
 	 const std::vector<int> &		datype_,
 	 const std::vector<float> &		dbox, 
+   const std::vector<float> &		field,
 	 const std::vector<std::pair<int,int>>&	pairs,
 	 const std::vector<float> &		delef_, 
 	 const int				nghost,

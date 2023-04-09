@@ -44,11 +44,13 @@ init (const std::string & model,
   deepmd::check_status (ReadBinaryProto(Env::Default(), model, graph_def));
   deepmd::check_status (session->Create(*graph_def));  
   dtype = session_get_dtype(session, "descrpt_attr/rcut");
+  std::cout << "dptensor before descrpt_attr/rcut" << std::endl;
   if (dtype == tensorflow::DT_DOUBLE) {
     rcut = get_scalar<double>("descrpt_attr/rcut");
   } else {
     rcut = get_scalar<float>("descrpt_attr/rcut");
   }
+  std::cout << "dptensor after descrpt_attr/rcut" << std::endl;
   cell_size = rcut;
   ntypes = get_scalar<int>("descrpt_attr/ntypes");
   odim = get_scalar<int>("model_attr/output_dim");

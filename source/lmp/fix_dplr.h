@@ -52,8 +52,12 @@ private:
     std::map<int,int > type_asso;
     std::map<int,int > bk_type_asso;
     std::vector<FLOAT_PREC> dipole_recd;
+    #ifdef HIGH_PREC
+    std::vector<double> field;
+    #else
+    std::vector<float> field;
+    #endif
     std::vector<double> dfcorr_buff;
-    std::vector<FLOAT_PREC> field;
     std::vector<double> efield;
     std::vector<double> efield_fsum, efield_fsum_all;
     int efield_force_flag;

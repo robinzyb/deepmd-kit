@@ -22,6 +22,7 @@ public:
 		const std::vector<VALUETYPE> &	dcoord_,
 		const std::vector<int> &		datype_,
 		const std::vector<VALUETYPE> &	dbox, 
+    const std::vector<VALUETYPE> &  field,
 		const std::vector<std::pair<int,int>> &	pairs,
 		const std::vector<VALUETYPE> &	delef_, 
 		const int			nghost,
